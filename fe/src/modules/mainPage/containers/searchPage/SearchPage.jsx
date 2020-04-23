@@ -1,5 +1,8 @@
 import React from "react"
 import { GET } from '../../actions/Actions';
+import LineGraph from "../graph/LineGraph";
+import CircleGraph from "../graph/CircleGraph";
+import OverralGraph from "../graph/OverralGraph";
 
 // eslint-disable-next-line
 import styles from "./styles.css"
@@ -45,7 +48,7 @@ export default class SearchPage extends React.Component {
         return false;
     }
 
-    onChange = (value) =>{
+    onChange = (value) => {
         this.setState({ searchInput: value });
     }
 
@@ -111,6 +114,9 @@ export default class SearchPage extends React.Component {
     }
 
     render() {
+        var historyPredictionData = [150, 155, 160, 157, 155, 160, 175, 180, 200, 205, 200, 210, 215];
+        var articlesOptimismData = [5, 10, 15];
+        var coefficientsData = [8.5, 5.5, 8.5];
         return (
             <React.Fragment>
                 <div id="content">
@@ -119,7 +125,7 @@ export default class SearchPage extends React.Component {
                     </div>
                     <div id="main-container">
                         <div id="search-container">
-                            <SearchSuggestions onKeyDown={this.onKeyDown} onChange={this.onChange}/>
+                            <SearchSuggestions onKeyDown={this.onKeyDown} onChange={this.onChange} />
 
                             <input placeholder="Search" id="search-input" onKeyDown={this.onKeyDown} onChange={this.onChange} type="text" spellCheck="false" autoFocus>
                             </input>
@@ -135,18 +141,29 @@ export default class SearchPage extends React.Component {
                                 <div className="info-card" id="info-container">
                                     <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
                                     <div id="price">Price: {this.state.price} USD</div>
-                                    <div id="coefficients">
-                                        <div id="NOC">NOC:{this.state.NOC}</div>
-                                        <div id="HOC">HOC:{this.state.HOC}</div>
-                                        <div id="ERC">ERC:{this.state.ERC}</div>
-                                    </div>
+
                                     <div id="predicted-change">
                                         Final predicted change: {this.state.predictedChange}%
                                 </div>
                                 </div>
+                                <div className="info-card" id="info-container">
+                                    <div id="coefficients">
+                                        <div id="coefficients-graph">
+                                            <OverralGraph input={coefficientsData}></OverralGraph>
+                                        </div>
+                                        <div id="coefficients-text">
+                                            <div id="NOC">NOC:{this.state.NOC}</div>
+                                            <div id="HOC">HOC:{this.state.HOC}</div>
+                                            <div id="ERC">ERC:{this.state.ERC}</div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="info-card" id="graph-container">
-                                    SOME GRAPH
-                            </div>
+                                    <LineGraph input={historyPredictionData}></LineGraph>
+                                </div>
+                                <div className="info-card" id="graph-container">
+                                    <CircleGraph input={articlesOptimismData}></CircleGraph>
+                                </div>
                                 {this.showArticles()}
                             </div>
                         }
