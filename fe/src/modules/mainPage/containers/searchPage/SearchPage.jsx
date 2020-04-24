@@ -14,7 +14,8 @@ export const LoadingCircle = () => {
         <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     )
 }
-
+const BAD_ARTICLE_THRESHOLD = 0.15;
+const GOOD_ARTICLE_THRESHOLD = 0.8;
 
 export default class SearchPage extends React.Component {
 
@@ -28,9 +29,9 @@ export default class SearchPage extends React.Component {
             companyName: "",
             companySymbol: "",
             stockLastUpdated: "",
-            NOC: "",
-            HOC: "",
-            ERC: "",
+            NOC: 5,
+            HOC: 5,
+            ERC: 5,
             predictedChange: "",
             price: "",
             articles: [],
@@ -52,22 +53,85 @@ export default class SearchPage extends React.Component {
         this.setState({ searchInput: value });
     }
 
+    doesArrayContainArticle = (array, article) => {
+        if (array.length == 0)
+            return false;
+        var i;
+        for (i = 0; i < array.length; ++i)
+            if (array[i].title === article.title)
+                return true;
+        return false;
+    }
+
+    shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    insertGoodArticles = (articles, noOfArticles) => {
+        var result = [];
+        var i, j;
+        for (i = 0; i < noOfArticles; ++i) {
+            for (j = 0; j < articles.length; ++j) {
+                if (articles[j].sentimentAnalysis > GOOD_ARTICLE_THRESHOLD
+                    && !this.doesArrayContainArticle(result, articles[j])
+                    && articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())) {
+                    result.push(articles[j]);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    insertBadArticles = (articles, noOfArticles) => {
+        var result = [];
+        var i, j;
+        for (i = 0; i < noOfArticles; ++i) {
+            for (j = 0; j < articles.length; ++j) {
+                if (articles[j].sentimentAnalysis < BAD_ARTICLE_THRESHOLD
+                    && !this.doesArrayContainArticle(result, articles[j])
+                    && articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())) {
+                    result.push(articles[j]);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    getFormattedLastUpdated = (article) => {
+        if (article.lastUpdated > 24)
+            return `${Math.round(article.lastUpdated / 24)}d ago`;
+        else
+            return `${Math.round(article.lastUpdated)}h ago`;
+    }
+
     showArticles = (noOfArticles = 4) => {
-
+        // var articles = this.shuffleArray(this.state.articles);
+        var articles = this.state.articles;
         if (this.state.isLoaded === true) {
-            var result = [];
-            this.state.articles.forEach((article, idx) => {
-                if (idx >= noOfArticles) return;
-                result.push(
-                    <div className="info-card bad-article">
-                        <a href={article.link}> <div id="article-title">{article.title}</div></a>
-                        <div id="article-date">{Math.round(article.lastUpdated)}h ago</div>
-                    </div>);
-            });
-
+            var articlesToShow = [];
+            this.insertGoodArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
+                <div className="info-card good-article">
+                    <a href={article.link}> <div id="article-title">{article.title}</div></a>
+            <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
+                </div>
+            ));
+            console.log(articlesToShow);
+            this.insertBadArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
+                <div className="info-card bad-article">
+                    <a href={article.link}> <div id="article-title">{article.title}</div></a>
+                    <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
+                </div>
+            ));
+            console.log(articlesToShow);
             return (
                 <React.Fragment>
-                    {result}
+                    {articlesToShow}
                 </React.Fragment>
             )
         }
@@ -86,6 +150,7 @@ export default class SearchPage extends React.Component {
             predictedChange: data.stock.predictedChange.toFixed(2),
             price: data.stock.price,
             articles: data.articles,
+            stockEvolution: data.stockEvolution
         })
 
     }
@@ -94,15 +159,20 @@ export default class SearchPage extends React.Component {
         if (e.key === 'Enter') {
             this.setState({ isLoaded: false, isLoading: true })
             GET(`/crawl/bi?stock=${this.state.searchInput}`).then(response => {
+                console.log(response.data);
                 this.showResults(response.data);
-                this.setState({ isLoaded: true, isLoading: false })
                 return ({
                     type: "SEARCH_RESULT",
                     payload: { searchResult: response.data }
                 });
             })
                 .catch(error => {
-                    this.setState({ isLoaded: false, isLoading: false })
+                    this.setState({
+                        isLoaded: false, isLoading: false,
+                        errors: {
+                            notFound: error.toString()
+                        }
+                    })
                     return ({
                         type: "SEARCH_ERROR",
                         payload: { errorMessage: error.toString() }
@@ -113,10 +183,51 @@ export default class SearchPage extends React.Component {
         }
     }
 
+    getNormalizedValue = (value, max, min) => (value - min) * 1 / (max - min);
+    getUniformValues = (value, avg) => Math.sqrt(-2.0 * Math.log(avg)) * Math.cos(2.0 * Math.PI * value);
+
+    getCoefficientsData = (state) => [state.NOC, state.ERC, state.HOC];
+
+
+    getArticlesOptimismData = (state) => {
+        var goodArticles = 0;
+        var neutralArticles = 0;
+        var badArticles = 0;
+        var sentimentAnalysisResults = [];
+
+        for (var i = 0; i < state.articles.length; i++)
+            sentimentAnalysisResults.push(state.articles[i].sentimentAnalysis);
+
+        var min = Math.min(...sentimentAnalysisResults);
+        var max = Math.max(...sentimentAnalysisResults);
+        const sum = sentimentAnalysisResults.reduce((a, b) => a + b, 0);
+        const avg = (sum / sentimentAnalysisResults.length) || 0;
+
+        for (var i = 0; i < sentimentAnalysisResults.length; i++) {
+            // sentimentAnalysisResults[i] = this.getUniformValues(sentimentAnalysisResults[i], avg);
+            if (sentimentAnalysisResults[i] < BAD_ARTICLE_THRESHOLD)
+                badArticles++;
+            if (sentimentAnalysisResults[i] >= BAD_ARTICLE_THRESHOLD && sentimentAnalysisResults[i] <= GOOD_ARTICLE_THRESHOLD)
+                neutralArticles++;
+            if (sentimentAnalysisResults[i] > GOOD_ARTICLE_THRESHOLD)
+                goodArticles++;
+        }
+        return [badArticles, neutralArticles, goodArticles];
+    }
+
+    getHistoryPredictionData = (state) => {
+        var stockEvolution = this.state.stockEvolution
+        console.log(stockEvolution);
+        var result = [];
+        var i;
+        for (i = 0; i < stockEvolution.history.length - 1; ++i)
+            result.push(stockEvolution.history[i].toFixed(2));
+        for (i = 0; i < stockEvolution.prediction.length; ++i)
+            result.push(stockEvolution.prediction[i].toFixed(2))
+        return result;
+    }
+
     render() {
-        var historyPredictionData = [150, 155, 160, 157, 155, 160, 175, 180, 200, 205, 200, 210, 215];
-        var articlesOptimismData = [5, 10, 15];
-        var coefficientsData = [8.5, 5.5, 8.5];
         return (
             <React.Fragment>
                 <div id="content">
@@ -138,18 +249,24 @@ export default class SearchPage extends React.Component {
                         {this.state.isLoaded &&
                             <div id="result-container">
 
-                                <div className="info-card" id="info-container">
-                                    <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
-                                    <div id="price">Price: {this.state.price} USD</div>
+                                <div className="info-card" id="company-card">
+                                    <div id="card-title">Company info</div>
+                                    <div id="company-flex-container">
+                                        <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
+                                        <div id="price">Price: {this.state.price} USD</div>
 
-                                    <div id="predicted-change">
-                                        Final predicted change: {this.state.predictedChange}%
-                                </div>
+                                        <div id="predicted-change">
+                                            Final predicted change: {this.state.predictedChange}%
+                                    </div>
+
+                                    </div>
+
                                 </div>
                                 <div className="info-card" id="info-container">
+                                    <div id="card-title">Coefficients</div>
                                     <div id="coefficients">
                                         <div id="coefficients-graph">
-                                            <OverralGraph input={coefficientsData}></OverralGraph>
+                                            <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
                                         </div>
                                         <div id="coefficients-text">
                                             <div id="NOC">NOC:{this.state.NOC}</div>
@@ -159,11 +276,14 @@ export default class SearchPage extends React.Component {
                                     </div>
                                 </div>
                                 <div className="info-card" id="graph-container">
-                                    <LineGraph input={historyPredictionData}></LineGraph>
+                                    <div id="card-title">Stock evolution</div>
+                                    <LineGraph input={this.getHistoryPredictionData(this.state)}></LineGraph>
                                 </div>
                                 <div className="info-card" id="graph-container">
-                                    <CircleGraph input={articlesOptimismData}></CircleGraph>
+                                    <div id="card-title">News analysis</div>
+                                    <CircleGraph input={this.getArticlesOptimismData(this.state)}></CircleGraph>
                                 </div>
+                                <div id="articles-subtitle">Some news about this company</div><div></div>
                                 {this.showArticles()}
                             </div>
                         }

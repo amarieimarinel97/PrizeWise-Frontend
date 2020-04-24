@@ -65,7 +65,7 @@ class LineGraph extends React.Component {
                     maxTicksLimit: 5
                 },
                 scaleLabel: {
-                    display: true,
+                    display: false,
                     labelString: 'USD'
                 }
             }],
@@ -90,7 +90,7 @@ class LineGraph extends React.Component {
             datasets: [
                 historyDataset,
                 predictedDataset],
-            options: { scales: this.adjustYAxisWithPercentage(predictedDataset.data, 0.5) }
+            options: { scales: this.adjustYAxisWithPercentage(predictedDataset.data, 0.1) }
         })
     }
     getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
