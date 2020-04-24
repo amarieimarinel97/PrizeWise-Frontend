@@ -78,7 +78,9 @@ export default class SearchPage extends React.Component {
             for (j = 0; j < articles.length; ++j) {
                 if (articles[j].sentimentAnalysis > GOOD_ARTICLE_THRESHOLD
                     && !this.doesArrayContainArticle(result, articles[j])
-                    && articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())) {
+                    && (articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
+                    || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
+                ) {
                     result.push(articles[j]);
                     break;
                 }
@@ -94,7 +96,10 @@ export default class SearchPage extends React.Component {
             for (j = 0; j < articles.length; ++j) {
                 if (articles[j].sentimentAnalysis < BAD_ARTICLE_THRESHOLD
                     && !this.doesArrayContainArticle(result, articles[j])
-                    && articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())) {
+                    && (articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
+                    || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
+
+                ) {
                     result.push(articles[j]);
                     break;
                 }
@@ -111,24 +116,21 @@ export default class SearchPage extends React.Component {
     }
 
     showArticles = (noOfArticles = 4) => {
-        // var articles = this.shuffleArray(this.state.articles);
         var articles = this.state.articles;
         if (this.state.isLoaded === true) {
             var articlesToShow = [];
             this.insertGoodArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
                 <div className="info-card good-article">
                     <a href={article.link}> <div id="article-title">{article.title}</div></a>
-            <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
+                    <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
                 </div>
             ));
-            console.log(articlesToShow);
             this.insertBadArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
                 <div className="info-card bad-article">
                     <a href={article.link}> <div id="article-title">{article.title}</div></a>
                     <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
                 </div>
             ));
-            console.log(articlesToShow);
             return (
                 <React.Fragment>
                     {articlesToShow}
@@ -159,7 +161,6 @@ export default class SearchPage extends React.Component {
         if (e.key === 'Enter') {
             this.setState({ isLoaded: false, isLoading: true })
             GET(`/crawl/bi?stock=${this.state.searchInput}`).then(response => {
-                console.log(response.data);
                 this.showResults(response.data);
                 return ({
                     type: "SEARCH_RESULT",
@@ -217,7 +218,6 @@ export default class SearchPage extends React.Component {
 
     getHistoryPredictionData = (state) => {
         var stockEvolution = this.state.stockEvolution
-        console.log(stockEvolution);
         var result = [];
         var i;
         for (i = 0; i < stockEvolution.history.length - 1; ++i)
@@ -226,6 +226,8 @@ export default class SearchPage extends React.Component {
             result.push(stockEvolution.prediction[i].toFixed(2))
         return result;
     }
+
+    getLabelDays = (state) => this.state.stockEvolution.historyDays;
 
     render() {
         return (
@@ -277,7 +279,7 @@ export default class SearchPage extends React.Component {
                                 </div>
                                 <div className="info-card" id="graph-container">
                                     <div id="card-title">Stock evolution</div>
-                                    <LineGraph input={this.getHistoryPredictionData(this.state)}></LineGraph>
+                                    <LineGraph input={this.getHistoryPredictionData(this.state)} labels={this.getLabelDays(this.state)}></LineGraph>
                                 </div>
                                 <div className="info-card" id="graph-container">
                                     <div id="card-title">News analysis</div>

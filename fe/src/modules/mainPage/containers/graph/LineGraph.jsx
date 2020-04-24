@@ -77,7 +77,7 @@ class LineGraph extends React.Component {
             }]
         }
     }
-    
+
     componentDidMount = () => {
 
         var historyDataset = this.state.datasets[0];
@@ -86,7 +86,7 @@ class LineGraph extends React.Component {
         var arr = [];
         predictedDataset.data = this.props.input;
         this.setState({
-            labels: this.getLabels(HISTORY_DAYS_NO, PREDICTED_DAYS_NO),
+            labels: this.getBetterLabels(HISTORY_DAYS_NO, PREDICTED_DAYS_NO),
             datasets: [
                 historyDataset,
                 predictedDataset],
@@ -97,37 +97,33 @@ class LineGraph extends React.Component {
     getShortMonthName = (date) => date.toLocaleString('default', { month: 'long' }).substring(0, 3)
 
 
-    //final result contains e.g [29 Mar, 30, 31, 1 Apr, 2 ...] with size of history + predicted +1 (pres day)    
-    getLabels = (historyDays, predictedDays) => {
-        var labelsNo = historyDays + predictedDays + 1;
-        var result = [];
-        var currentDate = new Date();
-        var todayDate = currentDate.getDate();
-        if (todayDate > labelsNo) {
-            for (var i = todayDate - historyDays; i <= todayDate + predictedDays; ++i)
-                if (i === todayDate - historyDays)
-                    result.push(i + " " + this.getShortMonthName(currentDate));
-                else
-                    result.push(i + "")
-            return result;
-        }
-        var lastMonthDays = this.getDaysInMonth(currentDate.getMonth() - 1, currentDate.getFullYear());
+    getNextBussinesDay = (input) => {
+        var date = new Date(input);
+        date.setDate(new Date(date).getDate() + 1);
+        while (!this.isBusinessDay(date)) 
+            date.setDate(new Date(date).getDate() + 1);
+        return date;
+    }
 
-        var remainingLastMonthDays = (historyDays - todayDate);
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        for (var i = lastMonthDays - remainingLastMonthDays; i <= lastMonthDays; ++i)
-            if (i === remainingLastMonthDays)
-                result.push(i + " " + this.getShortMonthName(currentDate));
-            else
-                result.push(i + "")
+    getBetterLabels = (historyDays, predictedDays) => {
+        var pastDays = this.props.labels;
+        var pastDaysNo = this.props.labels.length;
+        var i;
+        for (i = 0; i < pastDays.length; ++i)
+            pastDays[i] = new Date(Date.parse(pastDays[i]));
+        for (i = pastDaysNo; i < pastDaysNo + predictedDays; ++i)
+            pastDays.push(this.getNextBussinesDay(pastDays[pastDays.length-1]))
 
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        for (var i = 1; i < labelsNo - remainingLastMonthDays; ++i)
-            if (i === 1)
-                result.push(i + " " + this.getShortMonthName(currentDate));
-            else
-                result.push(i + "")
-        return result;
+        pastDays[0] = `${pastDays[0].getDate()} ${this.getShortMonthName(pastDays[0])}`;
+        for(i=1;i<pastDays.length;++i)
+            pastDays[i]=pastDays[i].getDate();
+        return pastDays;
+    }
+
+    isBusinessDay = (date) => {
+        if (date.getDay() == 0 || date.getDay() == 6)
+            return false;
+        return true;
     }
 
     getRandomData(noOfElements) {
