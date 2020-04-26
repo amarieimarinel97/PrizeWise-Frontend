@@ -149,6 +149,17 @@ a:visited {
     color: black;
 }
 
+#coefficients-graph canvas, #coefficients-text {
+    position: relative;
+    right: 10%;
+}
+
+#coefficients-text {
+    font-weight: 300;
+    line-height: 2rem;
+    width: 250%;
+}
+
 #company-flex-container {
     display: flex;
     flex-direction: column;
@@ -157,6 +168,16 @@ a:visited {
     width: 100%;
     height: 95%;
     margin: 0;
+}
+
+#error-container {
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    color: rgb(220, 28, 28);
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    margin-top: 1.5rem;
 }
 
 #company-info {

@@ -22,6 +22,7 @@ export default class SearchPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            hasError: false,
             searchInput: "",
             isLoading: false,
             isLoaded: false,
@@ -79,7 +80,7 @@ export default class SearchPage extends React.Component {
                 if (articles[j].sentimentAnalysis > GOOD_ARTICLE_THRESHOLD
                     && !this.doesArrayContainArticle(result, articles[j])
                     && (articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
-                    || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
+                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
                 ) {
                     result.push(articles[j]);
                     break;
@@ -97,7 +98,7 @@ export default class SearchPage extends React.Component {
                 if (articles[j].sentimentAnalysis < BAD_ARTICLE_THRESHOLD
                     && !this.doesArrayContainArticle(result, articles[j])
                     && (articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
-                    || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
+                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
 
                 ) {
                     result.push(articles[j]);
@@ -141,6 +142,7 @@ export default class SearchPage extends React.Component {
 
     showResults = (data) => {
         this.setState({
+            hasError: false,
             isLoading: false,
             isLoaded: true,
             companyName: data.stock.company,
@@ -157,6 +159,15 @@ export default class SearchPage extends React.Component {
 
     }
 
+    hideErrorMessage = (seconds) => {
+        setTimeout(() =>
+            this.setState({
+                hasError: false,
+                errorMessage: ""
+            })
+            , seconds * 1000);
+    }
+
     onKeyDown = (e) => {
         if (e.key === 'Enter') {
             this.setState({ isLoaded: false, isLoading: true })
@@ -168,11 +179,18 @@ export default class SearchPage extends React.Component {
                 });
             })
                 .catch(error => {
+                    var errorMessage = "";
+                    if (error.toString().toLowerCase().includes("network"))
+                        errorMessage = "Network error";
+                    else
+                        errorMessage = "Could not find what you were looking for";
+                        
+                    this.hideErrorMessage(2);
                     this.setState({
-                        isLoaded: false, isLoading: false,
-                        errors: {
-                            notFound: error.toString()
-                        }
+                        isLoaded: false,
+                        isLoading: false,
+                        hasError: true,
+                        errorMessage: errorMessage
                     })
                     return ({
                         type: "SEARCH_ERROR",
@@ -242,6 +260,9 @@ export default class SearchPage extends React.Component {
 
                             <input placeholder="Search" id="search-input" onKeyDown={this.onKeyDown} onChange={this.onChange} type="text" spellCheck="false" autoFocus>
                             </input>
+                            {this.state.hasError &&
+                                <div id="error-container">{this.state.errorMessage}</div>
+                            }
                         </div>
                         {this.state.isLoading &&
                             <div id="loading-container">
@@ -271,9 +292,9 @@ export default class SearchPage extends React.Component {
                                             <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
                                         </div>
                                         <div id="coefficients-text">
-                                            <div id="NOC">NOC:{this.state.NOC}</div>
-                                            <div id="HOC">HOC:{this.state.HOC}</div>
-                                            <div id="ERC">ERC:{this.state.ERC}</div>
+                                            <div id="NOC">NOC - {this.state.NOC}</div>
+                                            <div id="HOC">HOC - {this.state.HOC}</div>
+                                            <div id="ERC">ERC - {this.state.ERC}</div>
                                         </div>
                                     </div>
                                 </div>
