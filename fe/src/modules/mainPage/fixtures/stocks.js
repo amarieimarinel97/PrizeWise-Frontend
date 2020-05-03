@@ -764,8 +764,8 @@ export const stocks = [
         symbol: "AIF"
     },
     {
-        name: "Apple Hospitality REIT, Inc.",
-        symbol: "APLE"
+        name: "Apple ",
+        symbol: "AAPL"
     },
     {
         name: "Applied Industrial Technologies, Inc.",
