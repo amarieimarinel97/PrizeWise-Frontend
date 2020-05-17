@@ -4,10 +4,9 @@ ENV PATH /project/fe/node_modules/.bin:$PATH
 WORKDIR /project/fe
 ENV REACT_APP_API_BASE_URL=http://localhost:8085/api
 
-RUN npm install --silent
-RUN npm install react-scripts@3.4.1 -g --silent
+RUN npm install
+RUN npm install react-scripts@3.4.1 -g
 RUN npm run build
-
 
 
 FROM nginx:1.17.0-alpine
