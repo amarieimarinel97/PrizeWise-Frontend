@@ -16,3 +16,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 
 ENTRYPOINT ["nginx","-g","daemon off;"]
+
+
+#docker build -t react:tag .
+#docker run --network diploma-proj-net -it -p 81:80 -p:8085:8085 --name diploma-proj-react --rm react:tag
