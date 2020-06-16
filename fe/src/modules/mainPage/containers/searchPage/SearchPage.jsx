@@ -171,7 +171,7 @@ export default class SearchPage extends React.Component {
     onKeyDown = (e) => {
         if (e.key === 'Enter') {
             this.setState({ isLoaded: false, isLoading: true })
-            GET(`/crawl/bi?stock=${this.state.searchInput}`).then(response => {
+            GET(`/crawl/bi?stock=${this.state.searchInput}&save=true`).then(response => {
                 this.showResults(response.data);
                 return ({
                     type: "SEARCH_RESULT",
@@ -184,7 +184,7 @@ export default class SearchPage extends React.Component {
                         errorMessage = "Network error";
                     else
                         errorMessage = "Could not find what you were looking for";
-                        
+
                     this.hideErrorMessage(2);
                     this.setState({
                         isLoaded: false,
@@ -252,7 +252,15 @@ export default class SearchPage extends React.Component {
             <React.Fragment>
                 <div id="content">
                     <div id="title">
-                        PROJ
+                        WISE
+                    </div>
+                    <div id="nav-bar">
+                        <div id="top-popular">Popular stocks
+                        </div>
+                        <div id="top-growing">Growing stocks
+                        </div>
+                        <div id="top-decreasing">Decreasing stocks
+                        </div>
                     </div>
                     <div id="main-container">
                         <div id="search-container">
@@ -274,30 +282,29 @@ export default class SearchPage extends React.Component {
 
                                 <div className="info-card" id="company-card">
                                     <div id="card-title">Company info</div>
-                                    <div id="company-flex-container">
-                                        <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
-                                        <div id="price">Price: {this.state.price} USD</div>
 
-                                        <div id="predicted-change">
-                                            Final predicted change: {this.state.predictedChange}%
+                                    <div id="inside-container">
+                                        <div id="company-flex-container">
+                                            <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
+                                            <div id="price">Price: {this.state.price} USD</div>
+                                            <div id="NOC">News coefficient - {this.state.NOC}</div>
+                                            <div id="HOC">History coefficient - {this.state.HOC}</div>
+                                            <div id="ERC">Experts coefficient - {this.state.ERC}</div>
+                                            <div id="predicted-change">
+                                                Final predicted change: {this.state.predictedChange}%
                                     </div>
 
+                                        </div>
+                                        <div id="coefficients">
+                                            <div id="coefficients-graph">
+                                                <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
+                                            </div>
+
+                                        </div>
                                     </div>
 
                                 </div>
-                                <div className="info-card" id="info-container">
-                                    <div id="card-title">Coefficients</div>
-                                    <div id="coefficients">
-                                        <div id="coefficients-graph">
-                                            <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
-                                        </div>
-                                        <div id="coefficients-text">
-                                            <div id="NOC">NOC - {this.state.NOC}</div>
-                                            <div id="HOC">HOC - {this.state.HOC}</div>
-                                            <div id="ERC">ERC - {this.state.ERC}</div>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 <div className="info-card" id="graph-container">
                                     <div id="card-title">Stock evolution</div>
                                     <LineGraph input={this.getHistoryPredictionData(this.state)} labels={this.getLabelDays(this.state)}></LineGraph>

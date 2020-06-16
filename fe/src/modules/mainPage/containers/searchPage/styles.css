@@ -8,23 +8,58 @@
 }
 
 #title:before {
-    content: "DIPLOMA";
+    content: "PRIZE";
     font-weight: 200;
 }
 
 #content {
     height: 100%;
-    background-image: url('../../../../assets/wallpaper.png');
-    background-size: 100% 100%;
+    background-image: url('../../../../assets/wallpaper2.png');
+    background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    background-position: center;
     overflow: auto;
+    animation: breath 60s linear infinite;
+    /* animation:none; */
+}
+
+@keyframes breath {
+    0% {
+        background-size: 100% 100%;
+    }
+    50% {
+        background-size: 120% 120%;
+    }
+    100% {
+        background-size: 100% 100%;
+    }
+}
+
+#nav-bar{
+    width:100%;
+    flex-direction: row;
+    display:flex;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 200;
+    color:rgba(255,255,255, 0.75);
+    user-select: none;
+
+}
+
+#nav-bar>div {
+    margin:1rem;
+    margin-top:5%;
+    cursor: pointer;
+
 }
 
 #main-container {
     background: rgba(255, 255, 255, 0.75);
     width: 70%;
     margin: 5% 15%;
+    margin-top:0;
     min-height: auto;
     border-radius: 5px;
     padding: 5%;
@@ -64,6 +99,15 @@
     flex-wrap: wrap;
     font-family: 'Montserrat';
     font-weight: 500;
+}
+
+#inside-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.info-card:first-child {
+    width: 100% !important;
 }
 
 #company-info {
@@ -126,11 +170,11 @@
 }
 
 .good-article {
-    background-color: rgba(240, 255, 240, 1);
+    background-color: rgba(248, 255, 248, 1);
 }
 
 .bad-article {
-    background-color: rgba(255, 240, 240, 1);
+    background-color: rgba(255, 248, 248, 1);
 }
 
 #loading-container {
@@ -149,26 +193,37 @@ a:visited {
     color: black;
 }
 
-#coefficients-graph canvas, #coefficients-text {
-    position: relative;
-    right: 10%;
+
+#company-card{
+
+    background-size: cover;
+    background-image: url('../../../../assets/background2.png');
+    color:white;
+
+}
+
+#coefficients-graph>div>canvas {
+    height: 100% !important;
+    width: 100% !important;
 }
 
 #coefficients-text {
     font-weight: 300;
-    line-height: 2rem;
-    width: 250%;
 }
 
 #company-flex-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: stretch;
     font-weight: 300;
     width: 100%;
-    height: 95%;
     margin: 0;
 }
+
+#company-flex-container > div {
+    flex: 1;
+    align-self: auto;
+  }
 
 #error-container {
     font-weight: 400;
@@ -186,7 +241,7 @@ a:visited {
 }
 
 #card-title {
-    font-size: 0.5rem;
+    font-size: 0.7rem;
     font-weight: 300;
     user-select: none;
     margin: 0;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Radar } from 'react-chartjs-2';
+import { Radar, Polar } from 'react-chartjs-2';
 
 
 export default class OverralGraph extends React.Component {
@@ -7,19 +7,33 @@ export default class OverralGraph extends React.Component {
         super(props);
         this.state = {
             labels: ['News', 'Experts', 'History'],
-            datasets: []
-            ,
+            datasets: [],
+
             options: {
+                devicePixelRatio: 2,
                 legend: {
-                    display: false
+                    display: true,
+                    position: 'right',
+                    labels: {
+                        boxWidth: 15,
+                        padding: 10,
+                    fontColor:'#fff',
+
+                    }
                 },
                 scale: {
                     ticks: {
-                       beginAtZero: true,
-                       max:10,
-                       maxTicksLimit:3,
-                    }
+                        backdropColor: 'rgba(0,0,0,0)',
+                        fontColor:'rgba(255,255,255,0.4)',
+                        beginAtZero: true,
+                        max: 10,
+                        maxTicksLimit: 3,
+                    },
+                    gridLines: {
+                        color: 'rgba(255,255,255,0.4)',
+                      },
                 }
+                
             }
         }
     }
@@ -27,7 +41,11 @@ export default class OverralGraph extends React.Component {
     componentDidMount = () => {
         var datasetFromProps = [
             {
-                backgroundColor: 'rgba(75,192,192,0.4)',
+                backgroundColor: [
+                    '#E27D60',
+                    '#85DCBA',
+                    '#C38D9E'
+                ],
                 borderColor: 'rgba(240,240,240,1)',
                 pointBackgroundColor: 'rgba(179,181,198,1)',
                 pointBorderColor: '#fff',
@@ -45,7 +63,7 @@ export default class OverralGraph extends React.Component {
     render() {
         return (
             <div>
-                <Radar data={this.state} options={this.state.options} />
+                <Polar data={this.state} options={this.state.options} />
             </div>
         );
     }
