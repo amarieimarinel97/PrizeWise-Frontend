@@ -382,6 +382,34 @@ a:visited {
     display: inline-block;
 }
 
+#nav-bar > div:hover, #title:hover{
+    opacity: 0.75;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .react-autosuggest__container {
     position: relative;
 }

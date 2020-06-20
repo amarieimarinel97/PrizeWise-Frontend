@@ -401,7 +401,7 @@ export default class SearchPage extends React.Component {
                                             </p>: {this.state.ERC}</div>
                                             <div id="predicted-change">
                                                 Final predicted change: {this.state.predictedChange > 0 ? `+${this.state.predictedChange}` : this.state.predictedChange}%
-                                    </div>
+                                        </div>
 
                                         </div>
                                         <div id="coefficients">
