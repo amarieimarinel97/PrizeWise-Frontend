@@ -2,7 +2,6 @@ import Autosuggest from 'react-autosuggest';
 import React from 'react';
 import stocks from "../../fixtures/stocks";
 
-// Teach Autosuggest how to calculate suggestions for any given input value.
 const getSuggestions = value => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
@@ -57,8 +56,6 @@ class SearchSuggestions extends React.Component {
             spellCheck: false,
             autoFocus: true,
         };
-
-        // Finally, render it!
         return (
             <Autosuggest
                 suggestions={suggestions}

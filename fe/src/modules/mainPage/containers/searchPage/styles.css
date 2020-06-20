@@ -5,6 +5,7 @@
     font: 4rem 'Montserrat';
     font-weight: 600;
     user-select: none;
+    cursor: pointer;
 }
 
 #title:before {
@@ -36,30 +37,29 @@
     }
 }
 
-#nav-bar{
-    width:100%;
+#nav-bar {
+    width: 100%;
     flex-direction: row;
-    display:flex;
+    display: flex;
     justify-content: center;
     font-family: 'Montserrat', sans-serif;
     font-weight: 200;
-    color:rgba(255,255,255, 0.75);
+    color: rgba(255, 255, 255, 0.9);
     user-select: none;
-
+    font-size: 1.2rem;
 }
 
 #nav-bar>div {
-    margin:1rem;
-    margin-top:5%;
+    margin: 1rem;
+    margin-top: 5%;
     cursor: pointer;
-
 }
 
 #main-container {
     background: rgba(255, 255, 255, 0.75);
     width: 70%;
     margin: 5% 15%;
-    margin-top:0;
+    margin-top: 0;
     min-height: auto;
     border-radius: 5px;
     padding: 5%;
@@ -193,13 +193,11 @@ a:visited {
     color: black;
 }
 
-
-#company-card{
-
+#company-card {
     background-size: cover;
     background-image: url('../../../../assets/background2.png');
-    color:white;
-
+    color: white;
+    width:200% !important;
 }
 
 #coefficients-graph>div>canvas {
@@ -220,10 +218,20 @@ a:visited {
     margin: 0;
 }
 
-#company-flex-container > div {
+#company-flex-container>div {
     flex: 1;
     align-self: auto;
-  }
+}
+
+#company-flex-container>div>p {
+    margin: 0;
+    padding: 0;
+    color: white !important;
+}
+
+#company-flex-container>div>p>.dropdown-content {
+    top: 1.5rem;
+}
 
 #error-container {
     font-weight: 400;
@@ -252,6 +260,126 @@ a:visited {
     font-size: 1rem;
     font-weight: 300;
     user-select: none;
+}
+
+#top-stocks-table {
+    width: 100%;
+    background: white;
+    border-radius: 5px;
+    user-select: none;
+    position: relative;
+    font-size: 1rem;
+    line-height: 5rem;
+    text-align: center;
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+#top-stocks-head {
+    font-family: 'Montserrat', sans-serif;
+    background-color: rgba(0, 0, 0, 0.5);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    width: 100%;
+    color: white;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+}
+
+#top-stocks-head>th {
+    font-weight: 300;
+}
+
+#top-stocks-head>th>p {
+    margin: 0;
+    padding: 0;
+    line-height: 1rem;
+    color:white;
+}
+
+.animate-from-bottom {
+    animation-name: slide-from-bottom;
+    animation-duration: 0.25s;
+    position: relative;
+}
+
+@keyframes slide-from-bottom {
+    0% {
+        top: 50px;
+        opacity: 0.4;
+    }
+    100% {
+        top: 0px;
+        opacity: 1;
+    }
+}
+
+#top-stocks-title {
+    width: 100%;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 1.5rem;
+    margin-top: 5%;
+}
+
+#company-name-cell {
+    cursor: pointer;
+}
+
+#company-name-cell:hover {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+#top-stocks-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#top-stocks-body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.96);
+    min-width: 160px;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    padding: 0.5rem;
+    border-radius: 5px;
+    color: rgba(0, 0, 0, 1);
+    font-size: 0.8rem;
+    font-weight: 300;
+    user-select: none;
+    margin: 0;
+    left: 1rem;
+    top: 1rem;
+    animation-name: slide-from-right;
+    animation-duration: 0.1s;
+}
+
+@keyframes slide-from-right {
+    0% {
+        left: 3rem;
+    }
+    100% {
+        left: 1rem;
+    }
+}
+
+.info-icon {
+    display: inline-block;
+    position: relative;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+#company-card .info-icon {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.info-icon:hover .dropdown-content {
+    display: inline-block;
 }
 
 .react-autosuggest__container {
