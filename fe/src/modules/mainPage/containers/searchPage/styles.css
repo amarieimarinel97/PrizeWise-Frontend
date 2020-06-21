@@ -43,7 +43,7 @@
     display: flex;
     justify-content: center;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 200;
+    font-weight: 300;
     color: rgba(255, 255, 255, 0.9);
     user-select: none;
     font-size: 1.2rem;
@@ -55,11 +55,27 @@
     cursor: pointer;
 }
 
+#footer {
+    width: 100%;
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.9);
+    user-select: none;
+    font-size: 1.2rem;
+}
+
+#footer>div {
+    margin: 1rem;
+    cursor: pointer;
+}
+
 #main-container {
     background: rgba(255, 255, 255, 0.75);
     width: 70%;
-    margin: 5% 15%;
-    margin-top: 0;
+    margin: 0 15%;
     min-height: auto;
     border-radius: 5px;
     padding: 5%;
@@ -382,7 +398,7 @@ a:visited {
     display: inline-block;
 }
 
-#nav-bar > div:hover, #title:hover{
+#nav-bar > div:hover, #title:hover, #footer > div:hover{
     opacity: 0.75;
 }
 

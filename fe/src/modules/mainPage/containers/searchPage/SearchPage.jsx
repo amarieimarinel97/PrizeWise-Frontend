@@ -3,7 +3,7 @@ import { GET } from '../../actions/Actions';
 import LineGraph from "../graph/LineGraph";
 import CircleGraph from "../graph/CircleGraph";
 import OverralGraph from "../graph/OverralGraph";
-import { faQuestionCircle, faAngleDoubleUp, faAngleDoubleDown, faFire } from "@fortawesome/free-solid-svg-icons";
+import { faHistory ,faQuestionCircle, faAngleDoubleUp, faAngleDoubleDown, faFire, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // eslint-disable-next-line
@@ -292,9 +292,7 @@ export default class SearchPage extends React.Component {
                     payload: { errorMessage: error.toString() }
                 })
             }
-
             );
-
     }
 
     setTopStocks = (data, type) => {
@@ -304,6 +302,7 @@ export default class SearchPage extends React.Component {
             void element.offsetWidth;
             element.classList.add('animate-from-bottom');
         }
+        console.log(data);
 
         this.setState({
             topStocksTitle: `Top ${type} stocks`,
@@ -464,6 +463,12 @@ export default class SearchPage extends React.Component {
 
                     </div>
 
+                    <div id="footer">
+                        <div id="top-popular" onClick={() => this.getStockList('history')} ><FontAwesomeIcon icon={faHistory} /> My history
+                        </div>
+                        <div id="top-growing" onClick={() => this.getStockList('growing')}><FontAwesomeIcon icon={faStar} /> My watchlist
+                        </div>
+                    </div>
                 </div>
 
             </React.Fragment>
