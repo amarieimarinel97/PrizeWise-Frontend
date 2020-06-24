@@ -3,7 +3,7 @@ import { GET } from '../../actions/Actions';
 import LineGraph from "../graph/LineGraph";
 import CircleGraph from "../graph/CircleGraph";
 import OverralGraph from "../graph/OverralGraph";
-import { faHistory ,faQuestionCircle, faAngleDoubleUp, faAngleDoubleDown, faFire, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faSearchMinus, faHistory, faQuestionCircle, faAngleDoubleUp, faAngleDoubleDown, faFire, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // eslint-disable-next-line
@@ -19,6 +19,7 @@ export const LoadingCircle = () => {
 const BAD_ARTICLE_THRESHOLD = 0.15;
 const GOOD_ARTICLE_THRESHOLD = 0.8;
 const COMPANY_INFO = "Something about company info";
+const WATCHLIST_INFO = "Something about watchlist";
 const STOCK_EVOLUTION_INFO = "Something about stock evolution";
 const NEWS_ANALYSIS_INFO = "Something about news analysis";
 const NEWS_ARTICLES_INFO = "Something about news articles"
@@ -302,10 +303,14 @@ export default class SearchPage extends React.Component {
             void element.offsetWidth;
             element.classList.add('animate-from-bottom');
         }
-        console.log(data);
+        var title = "";
+        if (type === "popular" || type === "growing" || type === "decreasing")
+            title = `Top ${type} stocks`
+        if (type === "history" || type === "watchlist")
+            title = `My ${type}`
 
         this.setState({
-            topStocksTitle: `Top ${type} stocks`,
+            topStocksTitle: title,
             showingTop: true,
             hasError: false,
             isLoading: false,
@@ -319,7 +324,7 @@ export default class SearchPage extends React.Component {
         this.onKeyDown({ key: "Enter" }, input);
     }
 
-    showTopStocks = () => {
+    getTopStocksBody = () => {
         let result = this.state.topStocks.map(element =>
             <tr key={element.stock.symbol}>
                 <td id="company-name-cell" onClick={() => this.triggerSearch(element.stock.symbol)}>{element.stock.company}</td>
@@ -334,6 +339,41 @@ export default class SearchPage extends React.Component {
         return result;
     }
 
+    showTopStocks = () => {
+        if (this.state.topStocks.length > 0) {
+            return (
+                <table id="top-stocks-table">
+                    <thead>
+                        <tr id="top-stocks-head">
+                            <th>Company</th>
+                            <th>Price</th>
+                            <th><div className="info-icon">News<div className="dropdown-content">
+                                {NOC_INFO}</div>
+                            </div></th>
+                            <th><div className="info-icon">History<div className="dropdown-content">
+                                {HOC_INFO}</div>
+                            </div></th>
+                            <th><div className="info-icon">Experts<div className="dropdown-content">
+                                {ERC_INFO}</div>
+                            </div></th>
+                            <th>Prediction</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-stocks-body">
+                        {this.getTopStocksBody()}
+                    </tbody>
+                </table >
+
+            );
+        } else {
+            return (<div id="not-found">
+                <div id="not-found-image"><FontAwesomeIcon icon={faSearchMinus} /></div>
+                <div id="not-found-text">It looks like there is nothing to be seen here...</div>
+            </div>);
+        }
+
+    }
+
     goHome = () => {
         this.setState({
             showingTop: false,
@@ -341,6 +381,35 @@ export default class SearchPage extends React.Component {
             isLoading: false,
             isLoaded: false,
         });
+    }
+
+    addStockToWatchlist = () => {
+        GET(`/crawl/watchlist/add?stock=${this.state.companySymbol}`).then(response => {
+            return ({
+                type: "ADD_TO_WATCHLIST",
+                payload: { topResult: response.data }
+            });
+        })
+            .catch(error => {
+                var errorMessage = "";
+                if (error.toString().toLowerCase().includes("network"))
+                    errorMessage = "Network error";
+                else
+                    errorMessage = "Could not find what you were looking for";
+
+                this.hideErrorMessage(2);
+                this.setState({
+                    isLoaded: false,
+                    isLoading: false,
+                    hasError: true,
+                    errorMessage: errorMessage
+                })
+                return ({
+                    type: "SEARCH_ERROR",
+                    payload: { errorMessage: error.toString() }
+                })
+            }
+            );
     }
 
 
@@ -378,10 +447,15 @@ export default class SearchPage extends React.Component {
                             <div id="result-container">
 
                                 <div className="info-card" id="company-card">
-                                    <div id="card-title">Company info
+                                    <div id="card-header">
+                                        <div id="card-title">Company info
                                     <p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
-                                            {COMPANY_INFO}</div>
-                                        </p>
+                                                {COMPANY_INFO}</div>
+                                            </p>
+                                        </div>
+                                        <div id="card-watchlist" > <div id="watchlist-text" onClick={() => this.addStockToWatchlist()}>Add to watchlist</div> <p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                            {WATCHLIST_INFO}</div>
+                                        </p></div>
                                     </div>
 
                                     <div id="inside-container">
@@ -437,36 +511,16 @@ export default class SearchPage extends React.Component {
                             <React.Fragment>
                                 <p id="top-stocks-title">{this.state.topStocksTitle}</p>
                                 <div id="top-stocks-list" className="animate-from-bottom">
-                                    <table id="top-stocks-table">
-                                        <thead>
-                                            <tr id="top-stocks-head">
-                                                <th>Company</th>
-                                                <th>Price</th>
-                                                <th><p className="info-icon">News<div className="dropdown-content">
-                                                    {NOC_INFO}</div>
-                                                </p></th>
-                                                <th><p className="info-icon">History<div className="dropdown-content">
-                                                    {HOC_INFO}</div>
-                                                </p></th>
-                                                <th><p className="info-icon">Experts<div className="dropdown-content">
-                                                    {ERC_INFO}</div>
-                                                </p></th>
-                                                <th>Prediction</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="top-stocks-body">
-                                            {this.showTopStocks()}
-                                        </tbody>
-                                    </table>
+                                    {this.showTopStocks()}
                                 </div>
                             </React.Fragment>}
 
                     </div>
 
                     <div id="footer">
-                        <div id="top-popular" onClick={() => this.getStockList('history')} ><FontAwesomeIcon icon={faHistory} /> My history
+                        <div onClick={() => this.getStockList('history')} ><FontAwesomeIcon icon={faHistory} /> My history
                         </div>
-                        <div id="top-growing" onClick={() => this.getStockList('growing')}><FontAwesomeIcon icon={faStar} /> My watchlist
+                        <div onClick={() => this.getStockList('watchlist')}><FontAwesomeIcon icon={faStar} /> My watchlist
                         </div>
                     </div>
                 </div>
