@@ -3,6 +3,8 @@ COPY . /project
 ENV PATH /project/fe/node_modules/.bin:$PATH
 WORKDIR /project/fe
 ENV REACT_APP_API_BASE_URL=http://localhost:8085/api
+#change with 
+#ENV REACT_APP_API_BASE_URL=//ec2-54-88-23-138.compute-1.amazonaws.com:8085/api
 
 RUN npm install
 RUN npm install react-scripts@3.4.1 -g

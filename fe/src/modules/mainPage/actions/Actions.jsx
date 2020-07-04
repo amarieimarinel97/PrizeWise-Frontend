@@ -12,4 +12,4 @@ export const GET = (url, crossDomain = true) => {
             })
 };
 
-export const search = searchInput => GET(API_ENDPOINT + `/crawl/bi?stock=${searchInput}&save=true`)
+export const SEARCH = searchInput => GET(API_ENDPOINT + `/analyze?stock=${searchInput}&save=true`)

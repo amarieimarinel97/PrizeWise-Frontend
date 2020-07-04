@@ -16,8 +16,8 @@ export const LoadingCircle = () => {
         <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     )
 }
-const BAD_ARTICLE_THRESHOLD = 0.15;
-const GOOD_ARTICLE_THRESHOLD = 0.8;
+const BAD_ARTICLE_THRESHOLD = 0.35;
+const GOOD_ARTICLE_THRESHOLD = 0.65;
 const COMPANY_INFO = "Something about company info";
 const WATCHLIST_INFO = "Something about watchlist";
 const STOCK_EVOLUTION_INFO = "Something about stock evolution";
@@ -66,7 +66,6 @@ export default class SearchPage extends React.Component {
 
     onChange = (value) => {
         this.setState({ searchInput: value });
-        console.log(this.state.searchInput);
     }
 
     doesArrayContainArticle = (array, article) => {
@@ -189,7 +188,7 @@ export default class SearchPage extends React.Component {
             input = this.state.searchInput;
         if (e.key === 'Enter') {
             this.setState({ isLoaded: false, isLoading: true, showingTop: false })
-            GET(`/crawl/bi?stock=${input}&save=true`).then(response => {
+            GET(`/analyze?stock=${input}&save=true`).then(response => {
                 this.showResults(response.data);
                 return ({
                     type: "SEARCH_RESULT",
@@ -198,6 +197,7 @@ export default class SearchPage extends React.Component {
             })
                 .catch(error => {
                     var errorMessage = "";
+                    console.log(error.toString());
                     if (error.toString().toLowerCase().includes("network"))
                         errorMessage = "Network error";
                     else
@@ -256,18 +256,18 @@ export default class SearchPage extends React.Component {
         var stockEvolution = this.state.stockEvolution
         var result = [];
         var i;
-        for (i = 0; i < stockEvolution.history.length - 1; ++i)
-            result.push(stockEvolution.history[i].toFixed(2));
-        for (i = 0; i < stockEvolution.prediction.length; ++i)
-            result.push(stockEvolution.prediction[i].toFixed(2))
+        for (i = 0; i < stockEvolution.pastEvolution.length - 1; ++i)
+            result.push(stockEvolution.pastEvolution[i].toFixed(2));
+        for (i = 0; i < stockEvolution.predictedEvolution.length; ++i)
+            result.push(stockEvolution.predictedEvolution[i].toFixed(2))
         return result;
     }
 
-    getLabelDays = (state) => this.state.stockEvolution.historyDays;
+    getLabelDays = (state) => this.state.stockEvolution.pastDays;
 
     getStockList = (type) => {
         this.setState({ isLoaded: false, isLoading: false })
-        GET(`/crawl/${type}`).then(response => {
+        GET(`/${type}`).then(response => {
             this.setTopStocks(response.data, type);
             return ({
                 type: "TOP_RESULT",
@@ -384,7 +384,7 @@ export default class SearchPage extends React.Component {
     }
 
     addStockToWatchlist = () => {
-        GET(`/crawl/watchlist/add?stock=${this.state.companySymbol}`).then(response => {
+        GET(`/watchlist/add?stock=${this.state.companySymbol}`).then(response => {
             return ({
                 type: "ADD_TO_WATCHLIST",
                 payload: { topResult: response.data }
