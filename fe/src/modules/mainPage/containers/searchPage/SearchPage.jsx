@@ -35,6 +35,7 @@ export default class SearchPage extends React.Component {
         this.state = {
             showingTop: false,
             topStocks: null,
+            isSearchingOnlyArticles: false,
 
             hasError: false,
             searchInput: "",
@@ -182,41 +183,48 @@ export default class SearchPage extends React.Component {
             })
             , seconds * 1000);
     }
+    searchOnlyArticles = () => {
+
+    }
 
     onKeyDown = (e, input) => {
         if (input == null)
             input = this.state.searchInput;
         if (e.key === 'Enter') {
-            this.setState({ isLoaded: false, isLoading: true, showingTop: false })
-            GET(`/analyze?stock=${input}&save=true`).then(response => {
-                this.showResults(response.data);
-                return ({
-                    type: "SEARCH_RESULT",
-                    payload: { searchResult: response.data }
-                });
-            })
-                .catch(error => {
-                    var errorMessage = "";
-                    console.log(error.toString());
-                    if (error.toString().toLowerCase().includes("network"))
-                        errorMessage = "Network error";
-                    else
-                        errorMessage = "Could not find what you were looking for";
-
-                    this.hideErrorMessage(2);
-                    this.setState({
-                        isLoaded: false,
-                        isLoading: false,
-                        hasError: true,
-                        errorMessage: errorMessage
-                    })
+            if (this.state.isSearchingOnlyArticles) {
+                this.searchOnlyArticles();
+            } else {
+                this.setState({ isLoaded: false, isLoading: true, showingTop: false })
+                GET(`/analyze?stock=${input}&save=true`).then(response => {
+                    this.showResults(response.data);
                     return ({
-                        type: "SEARCH_ERROR",
-                        payload: { errorMessage: error.toString() }
-                    })
-                }
+                        type: "SEARCH_RESULT",
+                        payload: { searchResult: response.data }
+                    });
+                })
+                    .catch(error => {
+                        var errorMessage = "";
+                        console.log(error.toString());
+                        if (error.toString().toLowerCase().includes("network"))
+                            errorMessage = "Network error";
+                        else
+                            errorMessage = "Could not find what you were looking for";
 
-                );
+                        this.hideErrorMessage(2);
+                        this.setState({
+                            isLoaded: false,
+                            isLoading: false,
+                            hasError: true,
+                            errorMessage: errorMessage
+                        })
+                        return ({
+                            type: "SEARCH_ERROR",
+                            payload: { errorMessage: error.toString() }
+                        })
+                    }
+
+                    );
+            }
         }
     }
 
@@ -412,6 +420,7 @@ export default class SearchPage extends React.Component {
             );
     }
 
+    onChangeSearchingOnlyArticles = (value) => this.setState({ isSearchingOnlyArticles: document.getElementById("slider-input").checked })
 
     render() {
         return (
@@ -434,6 +443,14 @@ export default class SearchPage extends React.Component {
 
                             <input placeholder="Search" id="search-input" onKeyDown={this.onKeyDown} onChange={this.onChange} type="text" spellCheck="false" autoFocus>
                             </input>
+                            <div id="slider-container">
+                                <span id="slider-text">Search only news? </span>
+                                <label class="switch">
+                                    <input id="slider-input" onChange={this.onChangeSearchingOnlyArticles} type="checkbox"></input>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
                             {this.state.hasError &&
                                 <div id="error-container">{this.state.errorMessage}</div>
                             }
