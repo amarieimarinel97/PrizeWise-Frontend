@@ -26,6 +26,8 @@ const NEWS_ARTICLES_INFO = "Something about news articles"
 const NOC_INFO = "Something about NOC"
 const HOC_INFO = "Something about HOC"
 const ERC_INFO = "Something about ERC"
+const ARTICLE_RESULT_BEGINNING = "The analysis result of this article is "
+const ARTICLE_RESULT_ENDING = "\nThe closer to 1 the value is, the more positive is the article."
 
 export default class SearchPage extends React.Component {
 
@@ -36,6 +38,7 @@ export default class SearchPage extends React.Component {
             showingTop: false,
             topStocks: null,
             isSearchingOnlyArticles: false,
+            isDisplayingOnlyArticles: false,
 
             hasError: false,
             searchInput: "",
@@ -70,6 +73,8 @@ export default class SearchPage extends React.Component {
     }
 
     doesArrayContainArticle = (array, article) => {
+        if (article == null || article == undefined || article.title == null || article.title == undefined)
+            return true;
         if (array.length == 0)
             return false;
         var i;
@@ -113,15 +118,29 @@ export default class SearchPage extends React.Component {
                 if (articles[j].sentimentAnalysis < BAD_ARTICLE_THRESHOLD
                     && !this.doesArrayContainArticle(result, articles[j])
                     && (articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
-                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
-
-                ) {
+                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))) {
                     result.push(articles[j]);
                     break;
                 }
             }
         }
         return result;
+    }
+
+    insertRelevantArticles = (articles, noOfArticles) => {
+        var result = [...articles];
+
+        result.sort((art1, art2) => {
+            if (art1.body == null)
+                return 1;
+            if (art2.body == null)
+                return -1;
+            if (art1.lastUpdated < art2.lastUpdated)
+                return 1;
+            if (art1.body.length > art2.body.length)
+                return 1
+        });
+        return result.slice(0, Math.min(noOfArticles, articles.length));
     }
 
     getFormattedLastUpdated = (article) => {
@@ -131,28 +150,48 @@ export default class SearchPage extends React.Component {
             return `${Math.round(article.lastUpdated)}h ago`;
     }
 
-    showArticles = (noOfArticles = 4) => {
-        var articles = this.state.articles;
-        if (this.state.isLoaded === true) {
-            var articlesToShow = [];
-            this.insertGoodArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
-                <div className="info-card good-article">
-                    <a href={article.link}> <div id="article-title">{article.title}</div></a>
-                    <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
-                </div>
-            ));
-            this.insertBadArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
-                <div className="info-card bad-article">
-                    <a href={article.link}> <div id="article-title">{article.title}</div></a>
-                    <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
-                </div>
-            ));
-            return (
-                <React.Fragment>
-                    {articlesToShow}
-                </React.Fragment>
-            )
+    showArticles = (isShowingWithBody = false, noOfArticles = 4) => {
+        if (!isShowingWithBody) {
+            var articles = this.state.articles;
+            if (this.state.isLoaded === true) {
+                var articlesToShow = [];
+                this.insertGoodArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
+                    <div className="info-card article-card">
+                        <a href={article.link}> <div id="article-title">{article.title}</div></a>
+                        <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
+                    </div>
+                ));
+                this.insertBadArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
+                    <div className="info-card article-card">
+                        <a href={article.link}> <div id="article-title">{article.title}</div></a>
+                        <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
+                    </div>
+                ));
+
+            }
+        } else {
+            var articles = this.state.articles;
+            if (this.state.isLoaded === true) {
+                var articlesToShow = [];
+                this.insertRelevantArticles(articles, noOfArticles).forEach(article => articlesToShow.push(
+                    <div className="info-card article-card">
+                        <a href={article.link}> <div id="article-title">{article.title}</div></a>
+                        <div id="article-body">{article.body}</div>
+                        <div id="article-footer">
+                            <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
+                            <div id="article-analysis">Analysis result <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                {ARTICLE_RESULT_BEGINNING + article.sentimentAnalysis.toFixed(2) + ARTICLE_RESULT_ENDING}</div>
+                            </div></div>
+                        </div>
+                    </div>
+                ));
+            }
         }
+        return (
+            <React.Fragment>
+                {articlesToShow}
+            </React.Fragment>
+        )
     }
 
     showResults = (data) => {
@@ -164,10 +203,10 @@ export default class SearchPage extends React.Component {
             companyName: data.stock.company,
             companySymbol: data.stock.symbol,
             stockLastUpdated: new Date(1000 * data.stock.lastUpdated),
-            NOC: data.stock.newsOptimismCoefficient.toFixed(2),
-            HOC: data.stock.historyOptimismCoefficient.toFixed(2),
-            ERC: data.stock.expertsRecommendationCoefficient.toFixed(2),
-            predictedChange: data.stock.predictedChange.toFixed(2),
+            NOC: data.stock.newsOptimismCoefficient == null ? null : data.stock.newsOptimismCoefficient.toFixed(2),
+            HOC: data.stock.historyOptimismCoefficient == null ? null : data.stock.historyOptimismCoefficient.toFixed(2),
+            ERC: data.stock.expertsRecommendationCoefficient == null ? null : data.stock.expertsRecommendationCoefficient.toFixed(2),
+            predictedChange: data.stock.predictedChange == null ? null : data.stock.predictedChange.toFixed(2),
             price: data.stock.price,
             articles: data.articles,
             stockEvolution: data.stockEvolution
@@ -183,8 +222,36 @@ export default class SearchPage extends React.Component {
             })
             , seconds * 1000);
     }
-    searchOnlyArticles = () => {
+    searchOnlyArticles = (input) => {
+        this.setState({ isLoaded: false, isLoading: true, showingTop: false, isDisplayingOnlyArticles: true });
+        GET(`/analyze_articles?stock=${input}&save=true`).then(response => {
+            this.showResults(response.data);
+            return ({
+                type: "SEARCH_RESULT",
+                payload: { searchResult: response.data }
+            });
+        })
+            .catch(error => {
+                var errorMessage = "";
+                if (error.toString().toLowerCase().includes("network"))
+                    errorMessage = "Network error";
+                else
+                    errorMessage = "Could not find what you were looking for";
 
+                this.hideErrorMessage(2);
+                this.setState({
+                    isLoaded: false,
+                    isLoading: false,
+                    hasError: true,
+                    errorMessage: errorMessage
+                })
+                return ({
+                    type: "SEARCH_ERROR",
+                    payload: { errorMessage: error.toString() }
+                })
+            }
+
+            );
     }
 
     onKeyDown = (e, input) => {
@@ -192,9 +259,9 @@ export default class SearchPage extends React.Component {
             input = this.state.searchInput;
         if (e.key === 'Enter') {
             if (this.state.isSearchingOnlyArticles) {
-                this.searchOnlyArticles();
+                this.searchOnlyArticles(input);
             } else {
-                this.setState({ isLoaded: false, isLoading: true, showingTop: false })
+                this.setState({ isLoaded: false, isLoading: true, showingTop: false, isDisplayingOnlyArticles: false });
                 GET(`/analyze?stock=${input}&save=true`).then(response => {
                     this.showResults(response.data);
                     return ({
@@ -204,7 +271,6 @@ export default class SearchPage extends React.Component {
                 })
                     .catch(error => {
                         var errorMessage = "";
-                        console.log(error.toString());
                         if (error.toString().toLowerCase().includes("network"))
                             errorMessage = "Network error";
                         else
@@ -327,15 +393,18 @@ export default class SearchPage extends React.Component {
         })
     }
 
-    triggerSearch = (input) => {
-        this.setState({ searchInput: input });
-        this.onKeyDown({ key: "Enter" }, input);
+    triggerSearch = (symbol, company) => {
+        var textInput = this.state.textInput;
+        textInput.value = company;
+        this.setState({ searchInput: symbol, textInput: textInput });
+        this.onKeyDown({ key: "Enter" }, symbol);
+        console.log(this.state);
     }
 
     getTopStocksBody = () => {
         let result = this.state.topStocks.map(element =>
             <tr key={element.stock.symbol}>
-                <td id="company-name-cell" onClick={() => this.triggerSearch(element.stock.symbol)}>{element.stock.company}</td>
+                <td id="company-name-cell" onClick={() => this.triggerSearch(element.stock.symbol, element.stock.company)}>{element.stock.company}</td>
                 <td>{element.stock.price}</td>
                 <td>{element.stock.newsOptimismCoefficient.toFixed(2)}</td>
                 <td>{element.stock.historyOptimismCoefficient.toFixed(2)}</td>
@@ -420,7 +489,7 @@ export default class SearchPage extends React.Component {
             );
     }
 
-    onChangeSearchingOnlyArticles = (value) => this.setState({ isSearchingOnlyArticles: document.getElementById("slider-input").checked })
+    onChangeSearchingOnlyArticles = (value) => this.setState({ isSearchingOnlyArticles: document.getElementById("toggle-input").checked })
 
     render() {
         return (
@@ -441,13 +510,13 @@ export default class SearchPage extends React.Component {
                         <div id="search-container">
                             <SearchSuggestions onKeyDown={this.onKeyDown} onChange={this.onChange} />
 
-                            <input placeholder="Search" id="search-input" onKeyDown={this.onKeyDown} onChange={this.onChange} type="text" spellCheck="false" autoFocus>
+                            <input placeholder="Search" id="search-input" value={this.state.searchInput} onKeyDown={this.onKeyDown} onChange={ e => this.onChange(e.target.value)} type="text" spellCheck="false" autoFocus ref={ref => this.state.textInput = ref}>
                             </input>
-                            <div id="slider-container">
-                                <span id="slider-text">Search only news? </span>
+                            <div id="toggle-container">
+                                <span id="toggle-text">Search only news? </span>
                                 <label class="switch">
-                                    <input id="slider-input" onChange={this.onChangeSearchingOnlyArticles} type="checkbox"></input>
-                                    <span class="slider round"></span>
+                                    <input id="toggle-input" onChange={this.onChangeSearchingOnlyArticles} type="checkbox"></input>
+                                    <span className="toggle round"></span>
                                 </label>
                             </div>
 
@@ -466,61 +535,107 @@ export default class SearchPage extends React.Component {
                                 <div className="info-card" id="company-card">
                                     <div id="card-header">
                                         <div id="card-title">Company info
-                                    <p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                    <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
                                                 {COMPANY_INFO}</div>
-                                            </p>
+                                            </div>
                                         </div>
-                                        <div id="card-watchlist" > <div id="watchlist-text" onClick={() => this.addStockToWatchlist()}>Add to watchlist</div> <p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
-                                            {WATCHLIST_INFO}</div>
-                                        </p></div>
+                                        <div id="card-watchlist" > <div id="watchlist-text" onClick={() => this.addStockToWatchlist()}>Add to watchlist</div>
+                                            <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                                {WATCHLIST_INFO}</div>
+                                            </div></div>
                                     </div>
 
                                     <div id="inside-container">
                                         <div id="company-flex-container">
                                             <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
                                             <div id="price">Price: {this.state.price} USD</div>
-                                            <div id="NOC">
-                                                <p className="info-icon">News coefficient<div className="dropdown-content">
-                                                    {NOC_INFO}</div>
-                                                </p>: {this.state.NOC}</div>
-                                            <div id="HOC"><p className="info-icon">History coefficient<div className="dropdown-content">
-                                                {HOC_INFO}</div>
-                                            </p>: {this.state.HOC}</div>
-                                            <div id="ERC"><p className="info-icon">Experts coefficient<div className="dropdown-content">
-                                                {ERC_INFO}</div>
-                                            </p>: {this.state.ERC}</div>
-                                            <div id="predicted-change">
-                                                Final predicted change: {this.state.predictedChange > 0 ? `+${this.state.predictedChange}` : this.state.predictedChange}%
-                                        </div>
+                                            {!this.state.isDisplayingOnlyArticles &&
+                                                <React.Fragment>
+                                                    <div id="NOC">
+                                                        <div className="info-icon">News coefficient<div className="dropdown-content">
+                                                            {NOC_INFO}</div>
+                                                        </div>: {this.state.NOC}</div>
+                                                    <div id="HOC"><div className="info-icon">History coefficient<div className="dropdown-content">
+                                                        {HOC_INFO}</div>
+                                                    </div>: {this.state.HOC}</div>
+                                                    <div id="ERC"><div className="info-icon">Experts coefficient<div className="dropdown-content">
+                                                        {ERC_INFO}</div>
+                                                    </div>: {this.state.ERC}</div>
+                                                    <div id="predicted-change">
+                                                        Final predicted change: {this.state.predictedChange > 0 ? `+${this.state.predictedChange}` : this.state.predictedChange}%
+                                                    </div>
+                                                </React.Fragment>}
+                                            {this.state.isDisplayingOnlyArticles &&
+                                                <React.Fragment>
+                                                    <div id="good-articles">
+                                                        <div className="info-icon">No. of good articles<div className="dropdown-content">
+                                                            {NOC_INFO}</div>
+                                                        </div>: {this.getArticlesOptimismData(this.state)[2]}
+                                                    </div>
+                                                    <div id="neutral-articles">
+                                                        <div className="info-icon">No. of neutral articles<div className="dropdown-content">
+                                                            {NOC_INFO}</div>
+                                                        </div>: {this.getArticlesOptimismData(this.state)[1]}
+                                                    </div>
+                                                    <div id="bad-articles">
+                                                        <div className="info-icon">No. of bad articles<div className="dropdown-content">
+                                                            {NOC_INFO}</div>
+                                                        </div>: {this.getArticlesOptimismData(this.state)[0]}
+                                                    </div>
+                                                    <div id="NOC">
+                                                        <div className="info-icon">News coefficient<div className="dropdown-content">
+                                                            {NOC_INFO}</div>
+                                                        </div>: {this.state.NOC}</div>
+                                                </React.Fragment>
+                                            }
 
                                         </div>
                                         <div id="coefficients">
                                             <div id="coefficients-graph">
-                                                <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
+                                                {!this.state.isDisplayingOnlyArticles &&
+                                                    <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
+                                                }
+                                                {this.state.isDisplayingOnlyArticles &&
+                                                    <CircleGraph input={this.getArticlesOptimismData(this.state)} options={{
+                                                        animation: { animateScale: true },
+                                                        legend: {
+                                                            position: 'left',
+                                                            labels: { fontColor: "rgba(255,255,255,0.8)" }
+                                                        },
+                                                        devicePixelRatio: 2
+                                                    }}></CircleGraph>
+                                                }
                                             </div>
 
                                         </div>
                                     </div>
 
                                 </div>
-
-                                <div className="info-card" id="graph-container">
-                                    <div id="card-title">Stock evolution<p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
-                                        {STOCK_EVOLUTION_INFO}</div>
-                                    </p></div>
-                                    <LineGraph input={this.getHistoryPredictionData(this.state)} labels={this.getLabelDays(this.state)}></LineGraph>
-                                </div>
-                                <div className="info-card" id="graph-container">
-                                    <div id="card-title">News analysis<p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
-                                        {NEWS_ANALYSIS_INFO}</div>
-                                    </p></div>
-                                    <CircleGraph input={this.getArticlesOptimismData(this.state)}></CircleGraph>
-                                </div>
+                                {!this.state.isDisplayingOnlyArticles &&
+                                    <React.Fragment>
+                                        <div className="info-card" id="graph-container">
+                                            <div id="card-title">Stock evolution<p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                                {STOCK_EVOLUTION_INFO}</div>
+                                            </p></div>
+                                            <LineGraph input={this.getHistoryPredictionData(this.state)} labels={this.getLabelDays(this.state)}></LineGraph>
+                                        </div>
+                                        <div className="info-card" id="graph-container">
+                                            <div id="card-title">News analysis<p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                                {NEWS_ANALYSIS_INFO}</div>
+                                            </p></div>
+                                            <CircleGraph input={this.getArticlesOptimismData(this.state)}></CircleGraph>
+                                        </div>
+                                    </React.Fragment>
+                                }
                                 <div id="articles-subtitle">Some news about this company<p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
                                     {NEWS_ARTICLES_INFO}</div>
                                 </p></div><div></div>
-                                {this.showArticles()}
+                                {this.showArticles(this.state.isDisplayingOnlyArticles, this.state.isDisplayingOnlyArticles ? 50 : 4)}
+
                             </div>
+
+
+
                         }
 
 

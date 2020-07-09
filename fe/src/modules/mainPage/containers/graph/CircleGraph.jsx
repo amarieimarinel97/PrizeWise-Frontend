@@ -8,7 +8,7 @@ export default class CricleGraph extends React.Component {
         this.state = {
             options: {
                 animation: { animateScale: true },
-                legend: {position: 'left'}
+                legend: { position: 'left' }
             },
             labels: [
                 'Bad',
@@ -24,19 +24,20 @@ export default class CricleGraph extends React.Component {
             data: this.props.input,
             borderWidth: 0,
             backgroundColor: [
-                'rgba(195,20,20,0.5)',
-                'rgba(255,200,0,0.5)',
-                'rgba(75,195,75,0.5)'
-    
+                'rgba(195,20,20,0.6)',
+                'rgba(255,200,0,0.6)',
+                'rgba(75,195,75,0.6)'
+
             ],
             hoverBackgroundColor: [
-                'rgba(195,20,20,0.8)',
-                'rgba(255,200,0,0.8)',
-                'rgba(75,195,75,0.8)'
+                'rgba(195,20,20,0.4)',
+                'rgba(255,200,0,0.4)',
+                'rgba(75,195,75,0.4)'
             ]
         }]
         this.setState({
-            datasets: datasetFromProps
+            datasets: datasetFromProps,
+            options: this.props.options != null ? this.props.options : this.state.options
         });
     }
 
