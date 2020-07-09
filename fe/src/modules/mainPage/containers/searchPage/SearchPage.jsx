@@ -34,6 +34,7 @@ export default class SearchPage extends React.Component {
     constructor(props) {
         super(props);
         this.triggerSearch = this.triggerSearch.bind(this);
+        this.suggestionsComponent = React.createRef();
         this.state = {
             showingTop: false,
             topStocks: null,
@@ -394,11 +395,9 @@ export default class SearchPage extends React.Component {
     }
 
     triggerSearch = (symbol, company) => {
-        var textInput = this.state.textInput;
-        textInput.value = company;
-        this.setState({ searchInput: symbol, textInput: textInput });
+        this.setState({ searchInput: symbol });
+        this.suggestionsComponent.current.setState({ value: company })
         this.onKeyDown({ key: "Enter" }, symbol);
-        console.log(this.state);
     }
 
     getTopStocksBody = () => {
@@ -508,10 +507,8 @@ export default class SearchPage extends React.Component {
                     </div>
                     <div id="main-container">
                         <div id="search-container">
-                            <SearchSuggestions onKeyDown={this.onKeyDown} onChange={this.onChange} />
+                            <SearchSuggestions onKeyDown={this.onKeyDown} onChange={this.onChange} ref={this.suggestionsComponent} />
 
-                            <input placeholder="Search" id="search-input" value={this.state.searchInput} onKeyDown={this.onKeyDown} onChange={ e => this.onChange(e.target.value)} type="text" spellCheck="false" autoFocus ref={ref => this.state.textInput = ref}>
-                            </input>
                             <div id="toggle-container">
                                 <span id="toggle-text">Search only news? </span>
                                 <label class="switch">
@@ -613,16 +610,28 @@ export default class SearchPage extends React.Component {
                                 </div>
                                 {!this.state.isDisplayingOnlyArticles &&
                                     <React.Fragment>
-                                        <div className="info-card" id="graph-container">
-                                            <div id="card-title">Stock evolution<p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                        <div className="info-card" id="investition-card">
+                                            <div id="card-title">Invest simulation<div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
                                                 {STOCK_EVOLUTION_INFO}</div>
-                                            </p></div>
+                                            </div></div>
+                                            <div id="investition-container">
+                                                <div id="investition-input">If you invest today US$
+                                                <input type="number"></input></div>
+                                                <div id="investition-output">You are going to receive
+                                                <span id="invest-result">150$</span>
+                                                in 1 month.</div>
+                                            </div>
+                                        </div>
+                                        <div className="info-card" id="graph-container">
+                                            <div id="card-title">Stock evolution<div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                                {STOCK_EVOLUTION_INFO}</div>
+                                            </div></div>
                                             <LineGraph input={this.getHistoryPredictionData(this.state)} labels={this.getLabelDays(this.state)}></LineGraph>
                                         </div>
                                         <div className="info-card" id="graph-container">
-                                            <div id="card-title">News analysis<p className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                            <div id="card-title">News analysis<div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
                                                 {NEWS_ANALYSIS_INFO}</div>
-                                            </p></div>
+                                            </div></div>
                                             <CircleGraph input={this.getArticlesOptimismData(this.state)}></CircleGraph>
                                         </div>
                                     </React.Fragment>

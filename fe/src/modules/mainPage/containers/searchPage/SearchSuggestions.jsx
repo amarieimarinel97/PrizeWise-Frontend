@@ -22,7 +22,7 @@ class SearchSuggestions extends React.Component {
         };
     }
 
-    getSuggestionValue = suggestion => suggestion.name.split(" ")[0];
+    getSuggestionValue = suggestion => suggestion.name;
 
     renderSuggestion = suggestion => (
         <div>
