@@ -83,7 +83,6 @@ class LineGraph extends React.Component {
         var historyDataset = this.state.datasets[0];
         historyDataset.data = this.props.input.slice(0, HISTORY_DAYS_NO + 1);
         var predictedDataset = this.state.datasets[1];
-        var arr = [];
         predictedDataset.data = this.props.input;
         this.setState({
             labels: this.getBetterLabels(HISTORY_DAYS_NO, PREDICTED_DAYS_NO),
@@ -121,7 +120,7 @@ class LineGraph extends React.Component {
     }
 
     isBusinessDay = (date) => {
-        if (date.getDay() == 0 || date.getDay() == 6)
+        if (date.getDay() === 0 || date.getDay() === 6)
             return false;
         return true;
     }

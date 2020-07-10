@@ -16,6 +16,7 @@
     "react-chartjs-2": "^2.9.0",
     "react-chartjs2": "^1.2.1",
     "react-dom": "^16.13.1",
+    "react-infinite-scroll-component": "^5.0.5",
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.0"
   },

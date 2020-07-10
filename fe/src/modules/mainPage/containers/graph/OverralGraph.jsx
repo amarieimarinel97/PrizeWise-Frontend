@@ -1,5 +1,5 @@
 import React from 'react';
-import { Radar, Polar } from 'react-chartjs-2';
+import { Polar } from 'react-chartjs-2';
 
 
 export default class OverralGraph extends React.Component {

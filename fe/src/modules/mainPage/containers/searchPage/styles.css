@@ -6,11 +6,17 @@
     font-weight: 600;
     user-select: none;
     cursor: pointer;
+    display: inline-block;
 }
 
 #title:before {
     content: "PRIZE";
     font-weight: 200;
+}
+
+#header{
+    width: 100%;
+    text-align: center;
 }
 
 #content {
@@ -656,6 +662,7 @@ input[type=number] {
     -webkit-box-shadow: 0px 0px 10px -5px rgba(0, 0, 0, 0.5);
     -moz-box-shadow: 0px 0px 10px -5px rgba(0, 0, 0, 0.5);
     box-shadow: 0px 0px 10px -5px rgba(0, 0, 0, 0.5);
+    margin-left: 1rem;
 }
 
 input[type=number]:focus{
@@ -678,6 +685,37 @@ input[type=number]::-webkit-inner-spin-button{
     text-align: center;
 }
 
-#invest-result{
+#investition-result{
     margin:0 1rem;
+    font-weight: 400;
+    font-size:1rem;
+    color:black;
 }
+
+#investition-input, #investition-output{
+    display: flex;
+    align-content: flex-start;
+    align-items: center;
+}
+
+#top-popular > svg{
+    color:rgba(220, 190, 120, 0.8);
+}
+
+#top-growing > svg {
+    color: rgba(150, 220, 150, 0.8);
+}
+
+#top-decreasing > svg {
+    color: rgba(220, 150, 150, 0.8);
+}
+
+#my-history > svg{
+    color: rgba(80, 160, 230, 0.8);
+}
+
+#my-watchlist > svg{
+    color: rgba(220, 190, 60, 0.8);
+}
+
+

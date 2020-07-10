@@ -43,6 +43,8 @@ export default class SearchPage extends React.Component {
 
             hasError: false,
             searchInput: "",
+            investitionInput: 100,
+            investitionResult: 0,
             isLoading: false,
             isLoaded: false,
 
@@ -63,6 +65,9 @@ export default class SearchPage extends React.Component {
 
     }
 
+    componentDidMount = () => {
+    }
+
     isFormValid = () => {
         if (this.state.errors.searchInput !== null && this.state.errors.searchInput !== "")
             return true;
@@ -74,9 +79,9 @@ export default class SearchPage extends React.Component {
     }
 
     doesArrayContainArticle = (array, article) => {
-        if (article == null || article == undefined || article.title == null || article.title == undefined)
+        if (article === null || article === undefined || article.title === null || article.title === undefined)
             return true;
-        if (array.length == 0)
+        if (array.length === 0)
             return false;
         var i;
         for (i = 0; i < array.length; ++i)
@@ -93,37 +98,47 @@ export default class SearchPage extends React.Component {
         return array;
     }
 
-    insertGoodArticles = (articles, noOfArticles) => {
+    insertGoodArticles = (articles, noOfArticles, prioritizeArticlesWithBody) => {
         var result = [];
         var i, j;
         for (i = 0; i < noOfArticles; ++i) {
             for (j = 0; j < articles.length; ++j) {
-                if (articles[j].sentimentAnalysis > GOOD_ARTICLE_THRESHOLD
+                if (articles[j].sentimentAnalysis > GOOD_ARTICLE_THRESHOLD && (prioritizeArticlesWithBody === true ? articles[j].body != null : true)
                     && !this.doesArrayContainArticle(result, articles[j])
-                    && (articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
-                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))
+                    && (prioritizeArticlesWithBody === true ? true : ((articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
+                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))))
                 ) {
                     result.push(articles[j]);
                     break;
                 }
             }
         }
+
+        if (result.length < noOfArticles) {
+            result.push(...this.insertGoodArticles(articles, noOfArticles, false));
+            return result.slice(0, noOfArticles);
+        }
         return result;
     }
 
-    insertBadArticles = (articles, noOfArticles) => {
+    insertBadArticles = (articles, noOfArticles, prioritizeArticlesWithBody) => {
         var result = [];
         var i, j;
         for (i = 0; i < noOfArticles; ++i) {
             for (j = 0; j < articles.length; ++j) {
-                if (articles[j].sentimentAnalysis < BAD_ARTICLE_THRESHOLD
+                if (articles[j].sentimentAnalysis < BAD_ARTICLE_THRESHOLD && (prioritizeArticlesWithBody === true ? articles[j].body != null : true)
                     && !this.doesArrayContainArticle(result, articles[j])
-                    && (articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
-                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))) {
+                    && (prioritizeArticlesWithBody === true ? true : ((articles[j].title.toLowerCase().includes(this.state.companyName.split(/[,. ]+/)[0].toLowerCase())
+                        || articles[j].title.toLowerCase().includes(this.state.companySymbol.toLowerCase()))))
+                ) {
                     result.push(articles[j]);
                     break;
                 }
             }
+        }
+        if (result.length < noOfArticles) {
+            result.push(...this.insertBadArticles(articles, noOfArticles, false));
+            return result.slice(0, noOfArticles);
         }
         return result;
     }
@@ -140,6 +155,7 @@ export default class SearchPage extends React.Component {
                 return 1;
             if (art1.body.length > art2.body.length)
                 return 1
+            return 1;
         });
         return result.slice(0, Math.min(noOfArticles, articles.length));
     }
@@ -152,28 +168,29 @@ export default class SearchPage extends React.Component {
     }
 
     showArticles = (isShowingWithBody = false, noOfArticles = 4) => {
+        var articles = this.state.articles;
+        var articlesToShow = [];
+
         if (!isShowingWithBody) {
-            var articles = this.state.articles;
             if (this.state.isLoaded === true) {
-                var articlesToShow = [];
-                this.insertGoodArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
+                this.insertGoodArticles(articles, noOfArticles / 2, true).forEach(article => articlesToShow.push(
                     <div className="info-card article-card">
                         <a href={article.link}> <div id="article-title">{article.title}</div></a>
+                        <div id="article-body">{article.body}</div>
                         <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
                     </div>
                 ));
-                this.insertBadArticles(articles, noOfArticles / 2).forEach(article => articlesToShow.push(
+                this.insertBadArticles(articles, noOfArticles / 2, true).forEach(article => articlesToShow.push(
                     <div className="info-card article-card">
                         <a href={article.link}> <div id="article-title">{article.title}</div></a>
+                        <div id="article-body">{article.body}</div>
                         <div id="article-date">{this.getFormattedLastUpdated(article)}</div>
                     </div>
                 ));
 
             }
         } else {
-            var articles = this.state.articles;
             if (this.state.isLoaded === true) {
-                var articlesToShow = [];
                 this.insertRelevantArticles(articles, noOfArticles).forEach(article => articlesToShow.push(
                     <div className="info-card article-card">
                         <a href={article.link}> <div id="article-title">{article.title}</div></a>
@@ -196,6 +213,7 @@ export default class SearchPage extends React.Component {
     }
 
     showResults = (data) => {
+        var predictedChange = data.stock.predictedChange == null ? null : data.stock.predictedChange.toFixed(2);
         this.setState({
             hasError: false,
             isLoading: false,
@@ -207,10 +225,11 @@ export default class SearchPage extends React.Component {
             NOC: data.stock.newsOptimismCoefficient == null ? null : data.stock.newsOptimismCoefficient.toFixed(2),
             HOC: data.stock.historyOptimismCoefficient == null ? null : data.stock.historyOptimismCoefficient.toFixed(2),
             ERC: data.stock.expertsRecommendationCoefficient == null ? null : data.stock.expertsRecommendationCoefficient.toFixed(2),
-            predictedChange: data.stock.predictedChange == null ? null : data.stock.predictedChange.toFixed(2),
+            predictedChange: predictedChange,
             price: data.stock.price,
             articles: data.articles,
-            stockEvolution: data.stockEvolution
+            stockEvolution: data.stockEvolution,
+            investitionResult: (100 * (Math.pow(1 + predictedChange / 100, 30))).toFixed(2)
         })
 
     }
@@ -310,13 +329,7 @@ export default class SearchPage extends React.Component {
         for (var i = 0; i < state.articles.length; i++)
             sentimentAnalysisResults.push(state.articles[i].sentimentAnalysis);
 
-        var min = Math.min(...sentimentAnalysisResults);
-        var max = Math.max(...sentimentAnalysisResults);
-        const sum = sentimentAnalysisResults.reduce((a, b) => a + b, 0);
-        const avg = (sum / sentimentAnalysisResults.length) || 0;
-
-        for (var i = 0; i < sentimentAnalysisResults.length; i++) {
-            // sentimentAnalysisResults[i] = this.getUniformValues(sentimentAnalysisResults[i], avg);
+        for (i = 0; i < sentimentAnalysisResults.length; i++) {
             if (sentimentAnalysisResults[i] < BAD_ARTICLE_THRESHOLD)
                 badArticles++;
             if (sentimentAnalysisResults[i] >= BAD_ARTICLE_THRESHOLD && sentimentAnalysisResults[i] <= GOOD_ARTICLE_THRESHOLD)
@@ -372,7 +385,7 @@ export default class SearchPage extends React.Component {
     }
 
     setTopStocks = (data, type) => {
-        if (this.state.showingTop == true) {
+        if (this.state.showingTop === true) {
             const element = document.getElementById('top-stocks-list')
             element.classList.remove('animate-from-bottom');
             void element.offsetWidth;
@@ -398,6 +411,7 @@ export default class SearchPage extends React.Component {
         this.setState({ searchInput: symbol });
         this.suggestionsComponent.current.setState({ value: company })
         this.onKeyDown({ key: "Enter" }, symbol);
+
     }
 
     getTopStocksBody = () => {
@@ -488,14 +502,27 @@ export default class SearchPage extends React.Component {
             );
     }
 
-    onChangeSearchingOnlyArticles = (value) => this.setState({ isSearchingOnlyArticles: document.getElementById("toggle-input").checked })
+    onChangeSearchingOnlyArticles = (e) => this.setState({ isSearchingOnlyArticles: document.getElementById("toggle-input").checked })
+    onChangeInvestitionInput = (e) => {
+        this.setState({ investitionInput: e.target.value })
+    }
+
+    computeInvestitionOutput = (e) => {
+        if (e.key === 'Enter' && this.state.investitionInput >= 0) {
+            var rate = this.state.predictedChange;
+            var capital = this.state.investitionInput;
+            this.setState({ investitionResult: (capital * (Math.pow(1 + rate / 100, 30))).toFixed(2) })
+        }
+    }
 
     render() {
         return (
             <React.Fragment>
                 <div id="content">
-                    <div id="title" onClick={() => this.goHome()}>
-                        WISE
+                    <div id="header">
+                        <div id="title" onClick={() => this.goHome()} >
+                            WISE
+                    </div>
                     </div>
                     <div id="nav-bar">
                         <div id="top-popular" onClick={() => this.getStockList('popular')} ><FontAwesomeIcon icon={faFire} /> Popular stocks
@@ -511,7 +538,7 @@ export default class SearchPage extends React.Component {
 
                             <div id="toggle-container">
                                 <span id="toggle-text">Search only news? </span>
-                                <label class="switch">
+                                <label className="switch">
                                     <input id="toggle-input" onChange={this.onChangeSearchingOnlyArticles} type="checkbox"></input>
                                     <span className="toggle round"></span>
                                 </label>
@@ -596,14 +623,16 @@ export default class SearchPage extends React.Component {
                                                     <CircleGraph input={this.getArticlesOptimismData(this.state)} options={{
                                                         animation: { animateScale: true },
                                                         legend: {
-                                                            position: 'left',
-                                                            labels: { fontColor: "rgba(255,255,255,0.8)" }
+                                                            position: 'right',
+                                                            labels: {
+                                                                fontColor: "rgba(255,255,255,0.8)",
+                                                                boxWidth: 15
+                                                            }
                                                         },
                                                         devicePixelRatio: 2
                                                     }}></CircleGraph>
                                                 }
                                             </div>
-
                                         </div>
                                     </div>
 
@@ -616,10 +645,12 @@ export default class SearchPage extends React.Component {
                                             </div></div>
                                             <div id="investition-container">
                                                 <div id="investition-input">If you invest today US$
-                                                <input type="number"></input></div>
-                                                <div id="investition-output">You are going to receive
-                                                <span id="invest-result">150$</span>
-                                                in 1 month.</div>
+                                                <input type="number" onChange={this.onChangeInvestitionInput} onKeyUp={this.computeInvestitionOutput} defaultValue="100"></input>
+                                                </div>
+                                                <div id="investition-output">
+                                                    <span>You are going to have</span>
+                                                    <span id="investition-result"> {this.state.investitionResult}$ </span>
+                                                    <span>in 30 days.</span></div>
                                             </div>
                                         </div>
                                         <div className="info-card" id="graph-container">
@@ -642,9 +673,6 @@ export default class SearchPage extends React.Component {
                                 {this.showArticles(this.state.isDisplayingOnlyArticles, this.state.isDisplayingOnlyArticles ? 50 : 4)}
 
                             </div>
-
-
-
                         }
 
 
@@ -659,9 +687,9 @@ export default class SearchPage extends React.Component {
                     </div>
 
                     <div id="footer">
-                        <div onClick={() => this.getStockList('history')} ><FontAwesomeIcon icon={faHistory} /> My history
+                        <div id="my-history" onClick={() => this.getStockList('history')} ><FontAwesomeIcon icon={faHistory} /> My history
                         </div>
-                        <div onClick={() => this.getStockList('watchlist')}><FontAwesomeIcon icon={faStar} /> My watchlist
+                        <div id="my-watchlist" onClick={() => this.getStockList('watchlist')}><FontAwesomeIcon icon={faStar} /> My watchlist
                         </div>
                     </div>
                 </div>
