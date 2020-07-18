@@ -1,5 +1,5 @@
 import React from "react"
-import { GET } from '../../actions/Actions';
+import { GET, SEARCH, POST } from '../../actions/Actions';
 import LineGraph from "../graph/LineGraph";
 import CircleGraph from "../graph/CircleGraph";
 import OverralGraph from "../graph/OverralGraph";
@@ -28,6 +28,8 @@ const HOC_INFO = "Something about HOC"
 const ERC_INFO = "Something about ERC"
 const ARTICLE_RESULT_BEGINNING = "The analysis result of this article is "
 const ARTICLE_RESULT_ENDING = "\nThe closer to 1 the value is, the more positive is the article."
+const HISTORY_PREFIX = 'HIST-';
+const WATCHLIST_PREFIX = 'WTLS-';
 
 export default class SearchPage extends React.Component {
 
@@ -229,8 +231,10 @@ export default class SearchPage extends React.Component {
             price: data.stock.price,
             articles: data.articles,
             stockEvolution: data.stockEvolution,
-            investitionResult: (100 * (Math.pow(1 + predictedChange / 100, 30))).toFixed(2)
+            investitionResult: (100 * (Math.pow(1 + predictedChange / 100, 30))).toFixed(2),
+            isStockOnWatchlist: this.isStockOnWatchlist(data.stock.symbol)
         })
+        // document.cookie="HIST-NVDA=2020-07-18T11:48:59.3568139; Max-Age=80000; Expires=Sun, 19-Jul-2020 07:02:19 GMT";
 
     }
 
@@ -246,6 +250,8 @@ export default class SearchPage extends React.Component {
         this.setState({ isLoaded: false, isLoading: true, showingTop: false, isDisplayingOnlyArticles: true });
         GET(`/analyze_articles?stock=${input}&save=true`).then(response => {
             this.showResults(response.data);
+            this.addToLocalStorage(HISTORY_PREFIX + this.state.companySymbol, this.getDateWithDaysAhead(1).toUTCString());
+
             return ({
                 type: "SEARCH_RESULT",
                 payload: { searchResult: response.data }
@@ -274,6 +280,16 @@ export default class SearchPage extends React.Component {
             );
     }
 
+    addToLocalStorage = (name, value) => {
+        window.localStorage.setItem(name, value);
+    }
+
+    getDateWithDaysAhead = (noOfDays = 1) => {
+        var date = new Date();
+        date.setTime(date.getTime() + (noOfDays * 86400000));
+        return date;
+    }
+
     onKeyDown = (e, input) => {
         if (input == null)
             input = this.state.searchInput;
@@ -284,6 +300,8 @@ export default class SearchPage extends React.Component {
                 this.setState({ isLoaded: false, isLoading: true, showingTop: false, isDisplayingOnlyArticles: false });
                 GET(`/analyze?stock=${input}&save=true`).then(response => {
                     this.showResults(response.data);
+                    this.addToLocalStorage(HISTORY_PREFIX + this.state.companySymbol, this.getDateWithDaysAhead(1).toUTCString());
+
                     return ({
                         type: "SEARCH_RESULT",
                         payload: { searchResult: response.data }
@@ -312,6 +330,7 @@ export default class SearchPage extends React.Component {
                     );
             }
         }
+
     }
 
     getNormalizedValue = (value, max, min) => (value - min) * 1 / (max - min);
@@ -325,7 +344,6 @@ export default class SearchPage extends React.Component {
         var neutralArticles = 0;
         var badArticles = 0;
         var sentimentAnalysisResults = [];
-
         for (var i = 0; i < state.articles.length; i++)
             sentimentAnalysisResults.push(state.articles[i].sentimentAnalysis);
 
@@ -353,38 +371,81 @@ export default class SearchPage extends React.Component {
 
     getLabelDays = (state) => this.state.stockEvolution.pastDays;
 
+    buildBody = (type) => {
+        var result = [];
+        var prefix = type === 'history' ? 'HIST-' : 'WTLS-';
+        for (var i = 0; i < localStorage.length; i++) {
+            var name = localStorage.key(i);
+            var date = localStorage.getItem(name);
+            if (name.startsWith(prefix) && (Date.parse(date) - new Date()) > 0) {
+                result.push({ symbol: name.substring(prefix.length), date: date });
+            }
+        }
+        return { symbols: result };
+    }
     getStockList = (type) => {
         this.setState({ isLoaded: false, isLoading: false })
-        GET(`/${type}`).then(response => {
-            this.setTopStocks(response.data, type);
-            return ({
-                type: "TOP_RESULT",
-                payload: { topResult: response.data }
-            });
-        })
-            .catch(error => {
-                var errorMessage = "";
-                if (error.toString().toLowerCase().includes("network"))
-                    errorMessage = "Network error";
-                else
-                    errorMessage = "Could not find what you were looking for";
-
-                this.hideErrorMessage(2);
-                this.setState({
-                    isLoaded: false,
-                    isLoading: false,
-                    hasError: true,
-                    errorMessage: errorMessage
-                })
+        if (type === 'history' || type === 'watchlist') {
+            POST(`/${type}`, this.buildBody(type)).then(response => {
+                this.setTopStocks(response.data, type);
                 return ({
-                    type: "SEARCH_ERROR",
-                    payload: { errorMessage: error.toString() }
-                })
-            }
-            );
+                    type: "TOP_RESULT",
+                    payload: { topResult: response.data }
+                });
+            })
+                .catch(error => {
+                    var errorMessage = "";
+                    if (error.toString().toLowerCase().includes("network"))
+                        errorMessage = "Network error";
+                    else
+                        errorMessage = "Could not find what you were looking for";
+
+                    this.hideErrorMessage(2);
+                    this.setState({
+                        isLoaded: false,
+                        isLoading: false,
+                        hasError: true,
+                        errorMessage: errorMessage
+                    })
+                    return ({
+                        type: "SEARCH_ERROR",
+                        payload: { errorMessage: error.toString() }
+                    })
+                }
+                );
+        } else {
+            GET(`/${type}`).then(response => {
+                this.setTopStocks(response.data, type);
+                return ({
+                    type: "TOP_RESULT",
+                    payload: { topResult: response.data }
+                });
+            })
+                .catch(error => {
+                    var errorMessage = "";
+                    if (error.toString().toLowerCase().includes("network"))
+                        errorMessage = "Network error";
+                    else
+                        errorMessage = "Could not find what you were looking for";
+
+                    this.hideErrorMessage(2);
+                    this.setState({
+                        isLoaded: false,
+                        isLoading: false,
+                        hasError: true,
+                        errorMessage: errorMessage
+                    })
+                    return ({
+                        type: "SEARCH_ERROR",
+                        payload: { errorMessage: error.toString() }
+                    })
+                }
+                );
+        }
     }
 
     setTopStocks = (data, type) => {
+        var stocks = data;
         if (this.state.showingTop === true) {
             const element = document.getElementById('top-stocks-list')
             element.classList.remove('animate-from-bottom');
@@ -394,17 +455,20 @@ export default class SearchPage extends React.Component {
         var title = "";
         if (type === "popular" || type === "growing" || type === "decreasing")
             title = `Top ${type} stocks`
-        if (type === "history" || type === "watchlist")
-            title = `My ${type}`
+        if (type === "history" || type === "watchlist") {
+            stocks = [];
+            data.forEach(el => { stocks.push(el.stockAnalysis) });
+        }
 
+        title = `My ${type}`
         this.setState({
             topStocksTitle: title,
             showingTop: true,
             hasError: false,
             isLoading: false,
             isLoaded: false,
-            topStocks: data
-        })
+            topStocks: stocks
+        });
     }
 
     triggerSearch = (symbol, company) => {
@@ -412,6 +476,21 @@ export default class SearchPage extends React.Component {
         this.suggestionsComponent.current.setState({ value: company })
         this.onKeyDown({ key: "Enter" }, symbol);
 
+    }
+
+    getTopStocksByTimestampBody = () => {
+        let result = this.state.topStocks.map(element =>
+            <tr key={element.stock.symbol}>
+                <td id="company-name-cell" onClick={() => this.triggerSearch(element.stock.symbol, element.stock.company)}>{element.stock.company}</td>
+                <td>{element.stock.price}</td>
+                <td>{element.stock.newsOptimismCoefficient.toFixed(2)}</td>
+                <td>{element.stock.historyOptimismCoefficient.toFixed(2)}</td>
+                <td>{element.stock.expertsRecommendationCoefficient.toFixed(2)}</td>
+                <td>{element.stock.predictedChange.toFixed(2) > 0 ? `+${element.stock.predictedChange.toFixed(2)}` : element.stock.predictedChange.toFixed(2)}%</td>
+
+            </tr>
+        );
+        return result;
     }
 
     getTopStocksBody = () => {
@@ -473,34 +552,20 @@ export default class SearchPage extends React.Component {
         });
     }
 
-    addStockToWatchlist = () => {
-        GET(`/watchlist/add?stock=${this.state.companySymbol}`).then(response => {
-            return ({
-                type: "ADD_TO_WATCHLIST",
-                payload: { topResult: response.data }
-            });
-        })
-            .catch(error => {
-                var errorMessage = "";
-                if (error.toString().toLowerCase().includes("network"))
-                    errorMessage = "Network error";
-                else
-                    errorMessage = "Could not find what you were looking for";
-
-                this.hideErrorMessage(2);
-                this.setState({
-                    isLoaded: false,
-                    isLoading: false,
-                    hasError: true,
-                    errorMessage: errorMessage
-                })
-                return ({
-                    type: "SEARCH_ERROR",
-                    payload: { errorMessage: error.toString() }
-                })
-            }
-            );
+    addStockToWatchlist = (symbol) => {
+        this.addToLocalStorage(WATCHLIST_PREFIX + symbol, this.getDateWithDaysAhead(1).toUTCString());
+        this.setState({ isStockOnWatchlist: true });
     }
+
+    isStockOnWatchlist = (symbol) => window.localStorage.getItem(WATCHLIST_PREFIX + symbol) == null
+
+    removeStockFromWatchlist = (symbol) => {
+        window.localStorage.removeItem(WATCHLIST_PREFIX + symbol);
+        this.setState({ isStockOnWatchlist: false });
+    }
+
+    getStockWatchlist = () => !this.state.isStockOnWatchlist ?
+        (<div id="watchlist-text" onClick={() => this.removeStockFromWatchlist(this.state.companySymbol)}>Remove from watchlist</div>) : (<div id="watchlist-text" onClick={() => this.addStockToWatchlist(this.state.companySymbol)}>Add to watchlist</div>)
 
     onChangeSearchingOnlyArticles = (e) => this.setState({ isSearchingOnlyArticles: document.getElementById("toggle-input").checked })
     onChangeInvestitionInput = (e) => {
@@ -563,7 +628,10 @@ export default class SearchPage extends React.Component {
                                                 {COMPANY_INFO}</div>
                                             </div>
                                         </div>
-                                        <div id="card-watchlist" > <div id="watchlist-text" onClick={() => this.addStockToWatchlist()}>Add to watchlist</div>
+                                        <div id="card-watchlist" > {this.state.isStockOnWatchlist ?
+                                            <div id="watchlist-text" onClick={() => this.addStockToWatchlist(this.state.companySymbol)}>Add to watchlist</div> :
+                                            <div id="watchlist-text" onClick={() => this.removeStockFromWatchlist(this.state.companySymbol)}>Remove from watchlist</div>
+                                        }
                                             <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
                                                 {WATCHLIST_INFO}</div>
                                             </div></div>
