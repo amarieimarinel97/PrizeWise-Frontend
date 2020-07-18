@@ -473,7 +473,7 @@ export default class SearchPage extends React.Component {
 
     triggerSearch = (symbol, company) => {
         this.setState({ searchInput: symbol });
-        this.suggestionsComponent.current.setState({ value: company })
+        this.suggestionsComponent.current.setState({ value: company });
         this.onKeyDown({ key: "Enter" }, symbol);
 
     }
@@ -544,7 +544,9 @@ export default class SearchPage extends React.Component {
     }
 
     goHome = () => {
+        this.suggestionsComponent.current.setState({ value: "" });
         this.setState({
+            searchInput:"",
             showingTop: false,
             hasError: false,
             isLoading: false,

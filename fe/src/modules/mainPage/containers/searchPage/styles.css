@@ -517,6 +517,8 @@ a:visited {
     position: relative;
 }
 
+
+
 .react-autosuggest__input--focused {
     outline: none;
 }
@@ -724,3 +726,16 @@ input[type=number]::-webkit-inner-spin-button {
 #my-watchlist>svg {
     color: rgba(220, 190, 60, 0.8);
 }
+
+.react-autosuggest__input::placeholder{
+    opacity:0.3;
+    transition: opacity 0.35s ease-in-out;
+}
+.fade input[type=text]::placeholder {
+    opacity:0;
+    animation: fade-in-animation 0.25s;
+  }
+  @keyframes fade-in-animation {
+    from {opacity: 0}
+    to {opacity: 0.3}
+  }
