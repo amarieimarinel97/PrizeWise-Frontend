@@ -731,7 +731,7 @@ input[type=number]::-webkit-inner-spin-button {
     opacity:0.3;
     transition: opacity 0.35s ease-in-out;
 }
-.fade input[type=text]::placeholder {
+.animate-in input[type=text]::placeholder {
     opacity:0;
     animation: fade-in-animation 0.25s;
   }

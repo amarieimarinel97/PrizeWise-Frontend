@@ -19,8 +19,6 @@ const PLACEHOLDERS = [
     "Tesla"
 ]
 
-
-
 class SearchSuggestions extends React.Component {
     constructor() {
         super();
@@ -58,81 +56,82 @@ class SearchSuggestions extends React.Component {
         });
     };
 
-    triggerPlaceholderAnimation = () => {
+    triggerPlaceholderAnimation = (isPeriodic) => {
         if (this.state.toAnimatePlaceholder === true) {
             var animateTime = 1500;
             var visibleTime = 1000;
             setTimeout(() => {
-               
+
                 this.setState({
                     placeholder: PLACEHOLDERS[1],
                     toAnimatePlaceholder: false,
-                    fade:true
+                    fade: true
                 })
             }, animateTime);
             setTimeout(() => {
                 this.setState({
-                    fade:false
+                    fade: false
                 })
-            }, animateTime+visibleTime);
+            }, animateTime + visibleTime);
 
             setTimeout(() => {
                 this.setState({
                     placeholder: PLACEHOLDERS[2],
-                    fade:true
+                    fade: true
                 })
             }, animateTime * 2);
 
             setTimeout(() => {
                 this.setState({
-                    fade:false
+                    fade: false
                 })
-            }, animateTime*2+visibleTime);
+            }, animateTime * 2 + visibleTime);
 
             setTimeout(() => {
                 this.setState({
                     placeholder: PLACEHOLDERS[3],
-                    fade:true
+                    fade: true
                 })
             }, animateTime * 3);
             setTimeout(() => {
                 this.setState({
-                    fade:false
+                    fade: false
                 })
-            }, animateTime*3+visibleTime);
+            }, animateTime * 3 + visibleTime);
 
             setTimeout(() => {
                 this.setState({
                     placeholder: PLACEHOLDERS[4],
-                    fade:true
+                    fade: true
                 })
             }, animateTime * 4);
 
             setTimeout(() => {
                 this.setState({
-                    fade:false
+                    fade: false
                 })
-            }, animateTime*4+visibleTime);
+            }, animateTime * 4 + visibleTime);
 
             setTimeout(() => {
                 this.setState({
                     placeholder: PLACEHOLDERS[0],
-                    fade:true
+                    fade: true
                 })
             }, animateTime * 5);
 
-            // setTimeout(() => {
-            //     this.setState({
-            //         toAnimatePlaceholder: true,
-            //         fade:false
-            //     })
-            // }, animateTime * 10);
+            if (isPeriodic === true)
+                setTimeout(() => {
+                    this.setState({
+                        toAnimatePlaceholder: true,
+                        fade: false
+                    })
+                }, animateTime * 10);
         }
     }
 
     render() {
-        const fade = this.state.fade;
-        this.triggerPlaceholderAnimation();
+        const animateIn = this.state.fade;
+        this.triggerPlaceholderAnimation(false);
         const { value, suggestions } = this.state;
         const inputProps = {
             placeholder: this.state.placeholder,
@@ -144,7 +143,7 @@ class SearchSuggestions extends React.Component {
         };
         return (
 
-            <div className={fade ? '' : 'fade'} >
+            <div className={animateIn ? '' : 'animate-in'} >
                 <Autosuggest
                     suggestions={suggestions}
                     onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}

@@ -458,9 +458,9 @@ export default class SearchPage extends React.Component {
         if (type === "history" || type === "watchlist") {
             stocks = [];
             data.forEach(el => { stocks.push(el.stockAnalysis) });
+            title = `My ${type}`
         }
 
-        title = `My ${type}`
         this.setState({
             topStocksTitle: title,
             showingTop: true,
@@ -546,7 +546,7 @@ export default class SearchPage extends React.Component {
     goHome = () => {
         this.suggestionsComponent.current.setState({ value: "" });
         this.setState({
-            searchInput:"",
+            searchInput: "",
             showingTop: false,
             hasError: false,
             isLoading: false,
