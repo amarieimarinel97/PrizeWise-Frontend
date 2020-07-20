@@ -84,7 +84,7 @@
     margin: 0 15%;
     min-height: auto;
     border-radius: 5px;
-    padding: 5%;
+    padding: 5% 0;
     box-sizing: border-box;
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
 }
@@ -116,11 +116,13 @@
 }
 
 #result-container {
-    margin-top: 3rem;
+    margin-top: 2rem;
     display: flex;
     flex-wrap: wrap;
     font-family: 'Montserrat';
     font-weight: 500;
+    margin-left:5%;
+    margin-right:5%;
 }
 
 #inside-container {
@@ -216,6 +218,14 @@ a:visited {
     background-image: url('../../../../assets/background2.png');
     color: white;
     width: 100% !important;
+    margin:0;
+    margin-top:2rem;
+    border-radius:0;
+    padding-left:10%;
+    padding-right:10%;
+}
+#top-stocks-list{
+    margin: 0 5%;
 }
 
 #investition-card {
@@ -752,7 +762,6 @@ input[type=number]::-webkit-inner-spin-button {
         font-size: 0.8rem;
         text-align: center;
         font-weight: 400;
-        opacity: 0.8;
     }
 
     #footer{
@@ -767,9 +776,11 @@ input[type=number]::-webkit-inner-spin-button {
         padding: 1.5rem 0.5rem;
     }
     #search-container {
-        width: 90%;
-        margin: auto;
-        margin-right: 3rem;
+        /* width: 90%; */
+        /* margin: auto; */
+        /* margin-right: 3rem; */
+        margin:0;
+        width:auto;
     }
     #search-container input[type="text"] {
         font-size: 1.2rem;
@@ -795,6 +806,14 @@ input[type=number]::-webkit-inner-spin-button {
     #company-card #inside-container, #investition-card #investition-container {
         flex-direction: column;
     }
+
+    #company-card{
+        padding:1rem;
+        margin-left:2.5%;
+        margin-right:2.5%;
+        width:95% !important;
+        border-radius: 5px;
+    }
     #investition-input, #investition-output {
         width: 100% !important;
         flex-direction: row;
@@ -811,6 +830,7 @@ input[type=number]::-webkit-inner-spin-button {
     }
     .article-card, #graph-container, #articles-subtitle {
         width: 100% !important;
+        box-sizing: border-box;
     }
     #top-stocks-title {
         font-size: 1.3rem;
@@ -818,6 +838,7 @@ input[type=number]::-webkit-inner-spin-button {
 
     #top-stocks-list{
         overflow-x: auto;
+        margin:0 1%;
     }
     #top-stocks-table {
         font-size: 0.7rem;
@@ -833,18 +854,20 @@ input[type=number]::-webkit-inner-spin-button {
     #company-info {
         font-size: 1.5rem;
     }
-    #result-container {
-        margin-top: 1rem;
-    }
+    
     #top-stocks-head>th:first-child {
         width: 35%;
     }
 
     #top-stocks-head>th:last-child {
-        width: 18%;
+        width: 20%;
     }
+
+    #top-stocks-head>th:nth-child(2), tbody > tr td:nth-child(2) {
+        display:none;
+    }
+
     #company-name-cell {
-        /* word-wrap: break-word !important; */
         overflow:hidden;
         text-overflow: ellipsis;
     }
@@ -854,5 +877,28 @@ input[type=number]::-webkit-inner-spin-button {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+    
+    #result-container{
+        margin:1%;
+    }
+
+    #article-analysis .dropdown-content, #card-watchlist .dropdown-content,  #articles-subtitle .dropdown-content{
+        left: -10rem;
+        animation-name: slide-from-right-mobile;
+    }
+
+    .react-autosuggest__input, .react-autosuggest__suggestions-container--open{
+        padding: 1rem 0;
+
+    }
+
+    @keyframes slide-from-right-mobile {
+        0% {
+            left: -8rem;
+        }
+        100% {
+            left: -10rem;
+        }
     }
 }

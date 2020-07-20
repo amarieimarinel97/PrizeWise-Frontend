@@ -629,92 +629,95 @@ export default class SearchPage extends React.Component {
                             </div>
                         }
                         {this.state.isLoaded &&
+                            <React.Fragment>
+                            <div className="info-card" id="company-card">
+                                <div id="card-header">
+                                    <div id="card-title">Company info
+                                    <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                            {COMPANY_INFO}</div>
+                                        </div>
+                                    </div>
+                                    <div id="card-watchlist" > {this.state.isStockOnWatchlist ?
+                                        <div id="watchlist-text" onClick={() => this.addStockToWatchlist(this.state.companySymbol)}>Add to watchlist</div> :
+                                        <div id="watchlist-text" onClick={() => this.removeStockFromWatchlist(this.state.companySymbol)}>Remove from watchlist</div>
+                                    }
+                                        <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
+                                            {WATCHLIST_INFO}</div>
+                                        </div></div>
+                                </div>
+
+                                <div id="inside-container">
+                                    <div id="company-flex-container">
+                                        <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
+                                        <div id="price">Price: {this.state.price} USD</div>
+                                        {!this.state.isDisplayingOnlyArticles &&
+                                            <React.Fragment>
+                                                <div id="NOC">
+                                                    <div className="info-icon">News coefficient<div className="dropdown-content">
+                                                        {NOC_INFO}</div>
+                                                    </div>: {this.state.NOC}</div>
+                                                <div id="HOC"><div className="info-icon">History coefficient<div className="dropdown-content">
+                                                    {HOC_INFO}</div>
+                                                </div>: {this.state.HOC}</div>
+                                                <div id="ERC"><div className="info-icon">Experts coefficient<div className="dropdown-content">
+                                                    {ERC_INFO}</div>
+                                                </div>: {this.state.ERC}</div>
+                                                <div id="predicted-change">
+                                                    Final predicted change: {this.state.predictedChange > 0 ? `+${this.state.predictedChange}` : this.state.predictedChange}%
+                                                    </div>
+                                            </React.Fragment>}
+                                        {this.state.isDisplayingOnlyArticles &&
+                                            <React.Fragment>
+                                                <div id="good-articles">
+                                                    <div className="info-icon">No. of good articles<div className="dropdown-content">
+                                                        {NOC_INFO}</div>
+                                                    </div>: {this.getArticlesOptimismData(this.state)[2]}
+                                                </div>
+                                                <div id="neutral-articles">
+                                                    <div className="info-icon">No. of neutral articles<div className="dropdown-content">
+                                                        {NOC_INFO}</div>
+                                                    </div>: {this.getArticlesOptimismData(this.state)[1]}
+                                                </div>
+                                                <div id="bad-articles">
+                                                    <div className="info-icon">No. of bad articles<div className="dropdown-content">
+                                                        {NOC_INFO}</div>
+                                                    </div>: {this.getArticlesOptimismData(this.state)[0]}
+                                                </div>
+                                                <div id="NOC">
+                                                    <div className="info-icon">News coefficient<div className="dropdown-content">
+                                                        {NOC_INFO}</div>
+                                                    </div>: {this.state.NOC}</div>
+                                            </React.Fragment>
+                                        }
+
+                                    </div>
+                                    <div id="coefficients">
+                                        <div id="coefficients-graph">
+                                            {!this.state.isDisplayingOnlyArticles &&
+                                                <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
+                                            }
+                                            {this.state.isDisplayingOnlyArticles &&
+                                                <CircleGraph input={this.getArticlesOptimismData(this.state)} options={{
+                                                    animation: { animateScale: true },
+                                                    legend: {
+                                                        position: 'right',
+                                                        labels: {
+                                                            fontColor: "rgba(255,255,255,0.8)",
+                                                            boxWidth: 15
+                                                        }
+                                                    },
+                                                    devicePixelRatio: 2
+                                                }}></CircleGraph>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
                             <div id="result-container">
 
-                                <div className="info-card" id="company-card">
-                                    <div id="card-header">
-                                        <div id="card-title">Company info
-                                    <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
-                                                {COMPANY_INFO}</div>
-                                            </div>
-                                        </div>
-                                        <div id="card-watchlist" > {this.state.isStockOnWatchlist ?
-                                            <div id="watchlist-text" onClick={() => this.addStockToWatchlist(this.state.companySymbol)}>Add to watchlist</div> :
-                                            <div id="watchlist-text" onClick={() => this.removeStockFromWatchlist(this.state.companySymbol)}>Remove from watchlist</div>
-                                        }
-                                            <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
-                                                {WATCHLIST_INFO}</div>
-                                            </div></div>
-                                    </div>
-
-                                    <div id="inside-container">
-                                        <div id="company-flex-container">
-                                            <div id="company-info">{this.state.companyName} ({this.state.companySymbol})</div>
-                                            <div id="price">Price: {this.state.price} USD</div>
-                                            {!this.state.isDisplayingOnlyArticles &&
-                                                <React.Fragment>
-                                                    <div id="NOC">
-                                                        <div className="info-icon">News coefficient<div className="dropdown-content">
-                                                            {NOC_INFO}</div>
-                                                        </div>: {this.state.NOC}</div>
-                                                    <div id="HOC"><div className="info-icon">History coefficient<div className="dropdown-content">
-                                                        {HOC_INFO}</div>
-                                                    </div>: {this.state.HOC}</div>
-                                                    <div id="ERC"><div className="info-icon">Experts coefficient<div className="dropdown-content">
-                                                        {ERC_INFO}</div>
-                                                    </div>: {this.state.ERC}</div>
-                                                    <div id="predicted-change">
-                                                        Final predicted change: {this.state.predictedChange > 0 ? `+${this.state.predictedChange}` : this.state.predictedChange}%
-                                                    </div>
-                                                </React.Fragment>}
-                                            {this.state.isDisplayingOnlyArticles &&
-                                                <React.Fragment>
-                                                    <div id="good-articles">
-                                                        <div className="info-icon">No. of good articles<div className="dropdown-content">
-                                                            {NOC_INFO}</div>
-                                                        </div>: {this.getArticlesOptimismData(this.state)[2]}
-                                                    </div>
-                                                    <div id="neutral-articles">
-                                                        <div className="info-icon">No. of neutral articles<div className="dropdown-content">
-                                                            {NOC_INFO}</div>
-                                                        </div>: {this.getArticlesOptimismData(this.state)[1]}
-                                                    </div>
-                                                    <div id="bad-articles">
-                                                        <div className="info-icon">No. of bad articles<div className="dropdown-content">
-                                                            {NOC_INFO}</div>
-                                                        </div>: {this.getArticlesOptimismData(this.state)[0]}
-                                                    </div>
-                                                    <div id="NOC">
-                                                        <div className="info-icon">News coefficient<div className="dropdown-content">
-                                                            {NOC_INFO}</div>
-                                                        </div>: {this.state.NOC}</div>
-                                                </React.Fragment>
-                                            }
-
-                                        </div>
-                                        <div id="coefficients">
-                                            <div id="coefficients-graph">
-                                                {!this.state.isDisplayingOnlyArticles &&
-                                                    <OverralGraph input={this.getCoefficientsData(this.state)}></OverralGraph>
-                                                }
-                                                {this.state.isDisplayingOnlyArticles &&
-                                                    <CircleGraph input={this.getArticlesOptimismData(this.state)} options={{
-                                                        animation: { animateScale: true },
-                                                        legend: {
-                                                            position: 'right',
-                                                            labels: {
-                                                                fontColor: "rgba(255,255,255,0.8)",
-                                                                boxWidth: 15
-                                                            }
-                                                        },
-                                                        devicePixelRatio: 2
-                                                    }}></CircleGraph>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
                                 {!this.state.isDisplayingOnlyArticles &&
                                     <React.Fragment>
                                         <div className="info-card" id="investition-card">
@@ -723,7 +726,7 @@ export default class SearchPage extends React.Component {
                                             </div></div>
                                             <div id="investition-container">
                                                 <div id="investition-input">If you invest today US$
-                                                <input type="number" onChange={this.onChangeInvestitionInput} onKeyUp={this.computeInvestitionOutput} defaultValue="100"></input>
+                                                <input type="number" onChange={this.onChangeInvestitionInput} onKeyUp={this.computeInvestitionOutput} defaultValue="100" max="9999999"></input>
                                                 </div>
                                                 <div id="investition-output">
                                                     <span>You are going to have</span>
@@ -751,6 +754,7 @@ export default class SearchPage extends React.Component {
                                 {this.showArticles(this.state.isDisplayingOnlyArticles, this.state.isDisplayingOnlyArticles ? 50 : 4)}
 
                             </div>
+                            </React.Fragment>
                         }
 
 
