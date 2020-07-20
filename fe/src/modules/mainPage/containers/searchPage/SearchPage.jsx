@@ -259,7 +259,7 @@ export default class SearchPage extends React.Component {
         })
             .catch(error => {
                 var errorMessage = "";
-                if (error.toString().toLowerCase().includes("network"))
+                if (error.toString().toLowerCase().includes("Bad gateway"))
                     errorMessage = "Network error";
                 else
                     errorMessage = "Could not find what you were looking for";
@@ -309,7 +309,9 @@ export default class SearchPage extends React.Component {
                 })
                     .catch(error => {
                         var errorMessage = "";
-                        if (error.toString().toLowerCase().includes("network"))
+                        console.log(error);
+
+                        if (error.toString().toLowerCase().includes("status code 404"))
                             errorMessage = "Network error";
                         else
                             errorMessage = "Could not find what you were looking for";
