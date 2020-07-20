@@ -950,7 +950,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Bank of Nova Scotia The",
+		name: "Bank of Nova Scotia",
 		symbol: "BNS"
 
 	},
@@ -1095,7 +1095,7 @@ export const stocks = [
 
 	},
 	{
-		name: "BlackRockome Trust The",
+		name: "BlackRockome Trust",
 		symbol: "BKT"
 
 	},
@@ -1140,7 +1140,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Boeing Company The",
+		name: "Boeing Company",
 		symbol: "BA"
 
 	},
@@ -1170,7 +1170,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Boston Beer Company The",
+		name: "Boston Beer Company",
 		symbol: "SAM"
 
 	},
@@ -1235,7 +1235,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Brinks Company The",
+		name: "Brinks Company",
 		symbol: "BCO"
 
 	},
@@ -1275,7 +1275,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Buckle The",
+		name: "Buckle",
 		symbol: "BKE"
 
 	},
@@ -1655,7 +1655,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Cato The",
+		name: "Cato",
 		symbol: "CATO"
 
 	},
@@ -1760,7 +1760,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Chemours Company The",
+		name: "Chemours Company",
 		symbol: "CC"
 
 	},
@@ -1800,7 +1800,7 @@ export const stocks = [
 
 	},
 	{
-		name: "China Fund The",
+		name: "China Fund",
 		symbol: "CHN"
 
 	},
@@ -1950,7 +1950,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Clorox Company The",
+		name: "Clorox The Company",
 		symbol: "CLX"
 
 	},
@@ -1965,12 +1965,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Coca Cola Femsa SAB de CV",
-		symbol: "KOF"
-
-	},
-	{
-		name: "CocaCola Company The",
+		name: "CocaCola The Company",
 		symbol: "KO"
 
 	},
@@ -2085,7 +2080,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Container Store The",
+		name: "Container The Store",
 		symbol: "TCS"
 
 	},
@@ -2950,7 +2945,7 @@ export const stocks = [
 
 	},
 	{
-		name: "European Equity Fund The",
+		name: "European Equity Fund",
 		symbol: "EEA"
 
 	},
@@ -3150,7 +3145,7 @@ export const stocks = [
 
 	},
 	{
-		name: "First American The",
+		name: "First American",
 		symbol: "FAF"
 
 	},
@@ -3370,12 +3365,12 @@ export const stocks = [
 
 	},
 	{
-		name: "Gabelli Equity Trust The",
+		name: "Gabelli Equity Trust",
 		symbol: "GAB"
 
 	},
 	{
-		name: "Gabelli Utility Trust The",
+		name: "Gabelli Utility Trust",
 		symbol: "GUT"
 
 	},
@@ -3400,7 +3395,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Gap The",
+		name: "Gap",
 		symbol: "GPS"
 
 	},
@@ -3500,7 +3495,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Geo Group The",
+		name: "Geo Group",
 		symbol: "GEO"
 
 	},
@@ -3615,7 +3610,7 @@ export const stocks = [
 
 	},
 	{
-		name: "GormanRupp Company The",
+		name: "GormanRupp Company",
 		symbol: "GRC"
 
 	},
@@ -3675,7 +3670,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Greenbrier Companies The",
+		name: "Greenbrier Companies",
 		symbol: "GBX"
 
 	},
@@ -3865,7 +3860,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Hershey Company The",
+		name: "Hershey Company",
 		symbol: "HSY"
 
 	},
@@ -3960,7 +3955,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Home Depot The",
+		name: "Home Depot",
 		symbol: "HD"
 
 	},
@@ -4005,7 +4000,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Howard Hughes The",
+		name: "Howard Hughes",
 		symbol: "HHC"
 
 	},
@@ -4140,7 +4135,7 @@ export const stocks = [
 
 	},
 	{
-		name: "India Fund The",
+		name: "India Fund",
 		symbol: "IFN"
 
 	},
@@ -4300,7 +4295,7 @@ export const stocks = [
 
 	},
 	{
-		name: "JM Smucker Company The",
+		name: "JM Smucker Company",
 		symbol: "SJM"
 
 	},
@@ -4575,7 +4570,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Korea Fund The",
+		name: "Korea Fund",
 		symbol: "KF"
 
 	},
@@ -4595,7 +4590,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Kroger Company The",
+		name: "Kroger Company",
 		symbol: "KR"
 
 	},
@@ -4650,7 +4645,7 @@ export const stocks = [
 
 	},
 	{
-		name: "LS Starrett Company The",
+		name: "LS Starrett Company",
 		symbol: "SCX"
 
 	},
@@ -4995,7 +4990,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Macerich Company The",
+		name: "Macerich Company",
 		symbol: "MAC"
 
 	},
@@ -5055,7 +5050,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Manitowoc Company The",
+		name: "Manitowoc Company",
 		symbol: "MTW"
 
 	},
@@ -5090,7 +5085,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Marcus The",
+		name: "Marcus",
 		symbol: "MCS"
 
 	},
@@ -5285,7 +5280,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Mexico Fund The",
+		name: "Mexico Fund",
 		symbol: "MXF"
 
 	},
@@ -5365,7 +5360,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Mosaic Company The",
+		name: "Mosaic Company",
 		symbol: "MOS"
 
 	},
@@ -5525,7 +5520,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Nautilus Group The",
+		name: "Nautilus Group",
 		symbol: "NLS"
 
 	},
@@ -5575,17 +5570,17 @@ export const stocks = [
 
 	},
 	{
-		name: "New Germany Fund The",
+		name: "New Germany Fund",
 		symbol: "GF"
 
 	},
 	{
-		name: "New Home Company The",
+		name: "New Home Company",
 		symbol: "NWHM"
 
 	},
 	{
-		name: "New Ireland Fund The",
+		name: "New Ireland Fund",
 		symbol: "IRL"
 
 	},
@@ -6345,7 +6340,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Progressive The",
+		name: "Progressive",
 		symbol: "PGR"
 
 	},
@@ -6770,7 +6765,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Royal Bank Scotland The",
+		name: "Royal Bank Scotland",
 		symbol: "RBS"
 
 	},
@@ -7170,7 +7165,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Southern Company The",
+		name: "Southern Company",
 		symbol: "SO"
 
 	},
@@ -7220,7 +7215,7 @@ export const stocks = [
 
 	},
 	{
-		name: "St Joe Company The",
+		name: "St Joe Company",
 		symbol: "JOE"
 
 	},
@@ -7365,7 +7360,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Swiss Helvetia Fund The",
+		name: "Swiss Helvetia Fund",
 		symbol: "SWZ"
 
 	},
@@ -7450,7 +7445,7 @@ export const stocks = [
 
 	},
 	{
-		name: "TJX Companies The",
+		name: "TJX Companies",
 		symbol: "TJX"
 
 	},
@@ -7475,7 +7470,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Taiwan Fund The",
+		name: "Taiwan Fund",
 		symbol: "TWN"
 
 	},
@@ -7650,37 +7645,37 @@ export const stocks = [
 
 	},
 	{
-		name: "The AES",
+		name: "AES",
 		symbol: "AES"
 
 	},
 	{
-		name: "The Blackstone Group",
+		name: "Blackstone Group",
 		symbol: "BX"
 
 	},
 	{
-		name: "The Charles Schwab",
+		name: "Charles Schwab",
 		symbol: "SCHW"
 
 	},
 	{
-		name: "The Cooper Companies",
+		name: "Cooper Companies",
 		symbol: "COO"
 
 	},
 	{
-		name: "The GDL Fund",
+		name: "GDL Fund",
 		symbol: "GDL"
 
 	},
 	{
-		name: "The Rubicon Project",
+		name: "Rubicon Project",
 		symbol: "RUBI"
 
 	},
 	{
-		name: "The Travelers Companies",
+		name: "Travelers Companies",
 		symbol: "TRV"
 
 	},
@@ -7725,7 +7720,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Timken Company The",
+		name: "Timken Company",
 		symbol: "TKR"
 
 	},
@@ -7755,12 +7750,12 @@ export const stocks = [
 
 	},
 	{
-		name: "Toro Company The",
+		name: "Toro Company",
 		symbol: "TTC"
 
 	},
 	{
-		name: "Toronto Dominion Bank The",
+		name: "Toronto Dominion Bank",
 		symbol: "TD"
 
 	},
@@ -8440,7 +8435,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Walt Disney Company The",
+		name: "Walt Disney Company",
 		symbol: "DIS"
 
 	},
@@ -8520,7 +8515,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Western Union Company The",
+		name: "Western Union Company",
 		symbol: "WU"
 
 	},
@@ -8575,7 +8570,7 @@ export const stocks = [
 
 	},
 	{
-		name: "Williams Companies The",
+		name: "Williams Companies",
 		symbol: "WMB"
 
 	},

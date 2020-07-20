@@ -5,6 +5,7 @@ import CircleGraph from "../graph/CircleGraph";
 import OverralGraph from "../graph/OverralGraph";
 import { faSearchMinus, faHistory, faQuestionCircle, faAngleDoubleUp, faAngleDoubleDown, faFire, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import stocks from "../../fixtures/stocks";
 
 // eslint-disable-next-line
 import styles from "./styles.css"
@@ -234,8 +235,6 @@ export default class SearchPage extends React.Component {
             investitionResult: (100 * (Math.pow(1 + predictedChange / 100, 30))).toFixed(2),
             isStockOnWatchlist: this.isStockOnWatchlist(data.stock.symbol)
         })
-        // document.cookie="HIST-NVDA=2020-07-18T11:48:59.3568139; Max-Age=80000; Expires=Sun, 19-Jul-2020 07:02:19 GMT";
-
     }
 
     hideErrorMessage = (seconds) => {
@@ -289,10 +288,20 @@ export default class SearchPage extends React.Component {
         return date;
     }
 
+
     onKeyDown = (e, input) => {
+        if (FORBIDDEN_CHARS.includes(e.key)) {
+            if (e.preventDefault) e.preventDefault();
+            e.returnValue = false;
+            return;
+        }
+
         if (input == null)
             input = this.state.searchInput;
         if (e.key === 'Enter') {
+            const preexistingStock = stocks.find(element => element.name === input);
+            if (preexistingStock != undefined && 'symbol' in preexistingStock)
+                input = preexistingStock.symbol;
             if (this.state.isSearchingOnlyArticles) {
                 this.searchOnlyArticles(input);
             } else {
@@ -769,3 +778,5 @@ export default class SearchPage extends React.Component {
 
 
 }
+
+const FORBIDDEN_CHARS = ";'\"][{}|:\\/!@#$%^*()_+=`~"
