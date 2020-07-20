@@ -517,8 +517,6 @@ a:visited {
     position: relative;
 }
 
-
-
 .react-autosuggest__input--focused {
     outline: none;
 }
@@ -727,15 +725,134 @@ input[type=number]::-webkit-inner-spin-button {
     color: rgba(220, 190, 60, 0.8);
 }
 
-.react-autosuggest__input::placeholder{
-    opacity:0.3;
+.react-autosuggest__input::placeholder {
+    opacity: 0.3;
     transition: opacity 0.35s ease-in-out;
 }
+
 .animate-in input[type=text]::placeholder {
-    opacity:0;
+    opacity: 0;
     animation: fade-in-animation 0.25s;
-  }
-  @keyframes fade-in-animation {
-    from {opacity: 0}
-    to {opacity: 0.3}
-  }
+}
+
+@keyframes fade-in-animation {
+    from {
+        opacity: 0
+    }
+    to {
+        opacity: 0.3
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    #title {
+        font-size: 3rem;
+    }
+    #footer, #nav-bar {
+        font-size: 0.8rem;
+        text-align: center;
+        font-weight: 400;
+        opacity: 0.8;
+    }
+
+    #footer{
+        margin-bottom:2rem;
+    }
+    #nav-bar {
+        margin-top: 4rem;
+    }
+    #main-container {
+        width: 98%;
+        margin: 1%;
+        padding: 1.5rem 0.5rem;
+    }
+    #search-container {
+        width: 90%;
+        margin: auto;
+        margin-right: 3rem;
+    }
+    #search-container input[type="text"] {
+        font-size: 1.2rem;
+    }
+    #content {
+        /* animation:none; */
+    }
+    @keyframes breath {
+        0% {
+            background-size: 250% 100%;
+        }
+        50% {
+            background-size: 300% 120%;
+        }
+        100% {
+            background-size: 250% 100%;
+        }
+    }
+    .react-autosuggest__suggestions-container--open {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+    #company-card #inside-container, #investition-card #investition-container {
+        flex-direction: column;
+    }
+    #investition-input, #investition-output {
+        width: 100% !important;
+        flex-direction: row;
+    }
+    #investition-input {
+        margin-bottom: 1rem;
+    }
+    #company-flex-container>div {
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    #company-flex-container>div:last-child {
+        margin-bottom: 2rem;
+    }
+    .article-card, #graph-container, #articles-subtitle {
+        width: 100% !important;
+    }
+    #top-stocks-title {
+        font-size: 1.3rem;
+    }
+
+    #top-stocks-list{
+        overflow-x: auto;
+    }
+    #top-stocks-table {
+        font-size: 0.7rem;
+        line-height: 4rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        table-layout: fixed;
+    }
+    #loading-container {
+        margin-bottom: 2rem;
+    }
+    #company-info {
+        font-size: 1.5rem;
+    }
+    #result-container {
+        margin-top: 1rem;
+    }
+    #top-stocks-head>th:first-child {
+        width: 35%;
+    }
+
+    #top-stocks-head>th:last-child {
+        width: 18%;
+    }
+    #company-name-cell {
+        /* word-wrap: break-word !important; */
+        overflow:hidden;
+        text-overflow: ellipsis;
+    }
+    #top-stocks-head td {
+        color: red;
+        max-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

@@ -1595,11 +1595,6 @@ export const stocks = [
 
 	},
 	{
-		name: "Carnival",
-		symbol: "CCL"
-
-	},
-	{
 		name: "Carpenter Technology",
 		symbol: "CRS"
 

@@ -392,8 +392,8 @@ export default class SearchPage extends React.Component {
         return { symbols: result };
     }
     getStockList = (type) => {
-        this.setState({ isLoaded: false, isLoading: false })
         if (type === 'history' || type === 'watchlist') {
+            this.setState({ isLoaded: false, showingTop: false, isLoading: true });
             POST(`/${type}`, this.buildBody(type)).then(response => {
                 this.setTopStocks(response.data, type);
                 return ({
