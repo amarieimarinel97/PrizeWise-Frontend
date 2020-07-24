@@ -19,16 +19,23 @@ export const LoadingCircle = () => {
 }
 const BAD_ARTICLE_THRESHOLD = 0.35;
 const GOOD_ARTICLE_THRESHOLD = 0.65;
-const COMPANY_INFO = "Something about company info";
-const WATCHLIST_INFO = "Something about watchlist";
-const STOCK_EVOLUTION_INFO = "Something about stock evolution";
-const NEWS_ANALYSIS_INFO = "Something about news analysis";
-const NEWS_ARTICLES_INFO = "Something about news articles"
-const NOC_INFO = "Something about NOC"
-const HOC_INFO = "Something about HOC"
-const ERC_INFO = "Something about ERC"
+const COMPANY_INFO = "This is the company you searched for and our prediction for it. All coefficients are between 0(worst) - 10(best).";
+const COMPANY_INFO_ARTICLES = "This is the company you searched for and the result of articles and news analysis.";
+
+const WATCHLIST_INFO = "You can add companies to your watchlist to be up to date with their evolution.";
+const STOCK_EVOLUTION_INFO = "This graph presents the predicted evolution based on the history and sector performance of the company.";
+const NEWS_ANALYSIS_INFO = "This graph shows the breakdown of analysed articles based on their positivity.";
+const NEWS_ARTICLES_INFO = "A sample of analysed articles is presented here."
+const NOC_INFO = "News coefficient is computed by analyzing news and articles about this company."
+const HOC_INFO = "History coefficient is based on the past evolution and trends of this company's stock price."
+const ERC_INFO = "Experts coefficient is computed by analyzing brokers and experts opinion on this company."
 const ARTICLE_RESULT_BEGINNING = "The analysis result of this article is "
 const ARTICLE_RESULT_ENDING = "\nThe closer to 1 the value is, the more positive is the article."
+const GOOD_ARTICLES_INFO = 'Number of articles from this sample that are considered to be positive.';
+const NEUTRAL_ARTICLES_INFO = 'Number of articles from this sample that are considered to be neutral.';
+const BAD_ARTICLES_INFO = 'Number of articles from this sample that are considered to be negative.';
+
+
 const HISTORY_PREFIX = 'HIST-';
 const WATCHLIST_PREFIX = 'WTLS-';
 
@@ -634,7 +641,7 @@ export default class SearchPage extends React.Component {
                                 <div id="card-header">
                                     <div id="card-title">Company info
                                     <div className="info-icon">&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} /> <div className="dropdown-content">
-                                            {COMPANY_INFO}</div>
+                                            {this.state.isDisplayingOnlyArticles?COMPANY_INFO_ARTICLES: COMPANY_INFO}</div>
                                         </div>
                                     </div>
                                     <div id="card-watchlist" > {this.state.isStockOnWatchlist ?
@@ -670,17 +677,17 @@ export default class SearchPage extends React.Component {
                                             <React.Fragment>
                                                 <div id="good-articles">
                                                     <div className="info-icon">No. of good articles<div className="dropdown-content">
-                                                        {NOC_INFO}</div>
+                                                        {GOOD_ARTICLES_INFO}</div>
                                                     </div>: {this.getArticlesOptimismData(this.state)[2]}
                                                 </div>
                                                 <div id="neutral-articles">
                                                     <div className="info-icon">No. of neutral articles<div className="dropdown-content">
-                                                        {NOC_INFO}</div>
+                                                        {NEUTRAL_ARTICLES_INFO}</div>
                                                     </div>: {this.getArticlesOptimismData(this.state)[1]}
                                                 </div>
                                                 <div id="bad-articles">
                                                     <div className="info-icon">No. of bad articles<div className="dropdown-content">
-                                                        {NOC_INFO}</div>
+                                                        {BAD_ARTICLES_INFO}</div>
                                                     </div>: {this.getArticlesOptimismData(this.state)[0]}
                                                 </div>
                                                 <div id="NOC">
